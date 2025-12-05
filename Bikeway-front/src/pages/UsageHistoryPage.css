@@ -1,0 +1,222 @@
+/* 전체 페이지 스타일 */
+.usage-history-page {
+  font-family: 'Noto Sans KR', sans-serif;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+/* ✅ 메인페이지와 동일한 네비게이션 */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0,0,0,0.4); /* 투명한 사각형 */
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  z-index: 10;
+}
+
+.nav-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 32px;
+}
+
+
+
+
+/* 왼쪽 로고 컨테이너 */
+.usage-header-left {
+  display: flex;
+  align-items: center;
+  padding-left: 120px; /* ✅ 왼쪽에서 살짝 띄움 */
+}
+
+
+/* 오른쪽 메뉴 컨테이너 */
+.usage-header-right {
+  display: flex;
+  align-items: center;
+  padding-right: 80px; /* ✅ 오른쪽 여백을 줘서 전체가 왼쪽으로 이동 */
+}
+
+
+
+.usage-logo {
+  height: 98px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 16px;
+}
+
+.nav-item {
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin: 24px;
+  transition: color 0.3s ease;
+}
+
+.nav-item:hover {
+  color: #ffcc00;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* 네비게이션 메뉴 */
+.usage-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;   /* 가운데 정렬 */
+  gap: 24px;                 /* 모든 항목 사이 동일한 간격 */
+}
+
+
+
+
+
+
+
+
+
+/* 메뉴 항목 공통 스타일 */
+.usage-nav a,
+.usage-nav button,
+.usage-nav span {
+  display: inline-flex;      /* ✅ 버튼/링크/스팬 모두 동일한 flex 아이템 */
+  align-items: center;
+  justify-content: center;
+  min-width: auto;           /* ✅ 불필요한 너비 제거 */
+  padding: 0;                /* ✅ 기본 padding 제거 */
+  margin: 0;                 /* ✅ 기본 margin 제거 */
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+.usage-nav a:hover,
+.usage-nav button:hover,
+.usage-nav span:hover {
+  color: #ffcc00;
+}
+
+
+
+
+
+
+
+
+
+/* 페이지 제목 */
+.page-title {
+  margin: 200px 0 40px; /* ✅ 헤더 높이 고려해서 아래로 내림 */
+  text-align: center;
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+}
+
+
+/* 빈 메시지 */
+.empty-message {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+}
+
+
+/* 테이블 */
+.usage-table {
+  width: 90%;
+  margin: 0 auto 50px;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+
+.usage-table th,
+.usage-table td {
+  border: 1px solid #ccc;
+  padding: 12px;
+  text-align: center;
+}
+
+.usage-table th {
+  background-color: #e0f0ff;
+  font-weight: 600;
+}
+
+/* 다크 모드일 때 테이블 스타일 */
+body.dark-mode .usage-table {
+  background: #121212; /* 전체 테이블 배경 */
+  border-color: #444;  /* 테두리도 어둡게 */
+}
+
+body.dark-mode .usage-table th {
+  color: #ffcc00; /* 헤더는 강조 색 */
+  background: #1e1e1e;
+}
+
+body.dark-mode .usage-table td {
+  color: #f0f0f0; /* 데이터 글씨 밝게 */
+  background: #1e1e1e; /* 셀 배경 어둡게 */
+}
+
+@media (prefers-color-scheme: dark) {
+  .usage-history-page {
+    background-color: #121212;
+    color: #f0f0f0;
+  }
+
+  .usage-table {
+    background: #121212;
+    border-color: #444;
+  }
+
+  .usage-table th {
+    color: #ffcc00;
+    background: #1e1e1e;
+  }
+
+  .usage-table td {
+    color: #f0f0f0 !important; /* ✅ 글씨 밝게 강제 */
+    background: #1e1e1e;
+  }
+
+  .page-title {
+    color: #ffcc00; /* ✅ 강조 색 (노란색) */
+    text-shadow: 0 0 8px rgba(255, 204, 0, 0.6); /* ✅ 살짝 빛나는 효과 */
+  }
+
+}

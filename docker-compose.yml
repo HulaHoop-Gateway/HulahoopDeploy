@@ -1,0 +1,113 @@
+services:
+  # ===========================
+  # Gateway (API Entry)
+  # ===========================
+  gateway-back:
+    build: ./gateway/Gateway
+    container_name: gateway-back
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_TOOL_OPTIONS=-Xmx256m
+    depends_on:
+      - blue-back
+      - red-back
+      - cinema-back
+      - bike-back
+    networks:
+      - app-net
+
+  # ===========================
+  # Blue (AI Chat)
+  # ===========================
+  blue-front:
+    build: ./Blue-front
+    container_name: blue-front
+    ports:
+      - "5173:5173"
+    networks:
+      - app-net
+
+  blue-back:
+    build: ./Blue-back/blue-back
+    container_name: blue-back
+    ports:
+      - "8090:8090"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_TOOL_OPTIONS=-Xmx256m
+    networks:
+      - app-net
+
+  # ===========================
+  # Red (Admin Front/Back)
+  # ===========================
+  red-front:
+    build: ./Red-front/Red-front
+    container_name: red-front
+    ports:
+      - "3000:3000"
+    networks:
+      - app-net
+
+  red-back:
+    build: ./Red-back/red-back
+    container_name: red-back
+    ports:
+      - "8000:8000"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_TOOL_OPTIONS=-Xmx256m
+    networks:
+      - app-net
+
+  # ===========================
+  # Cinema (Movie)
+  # ===========================
+  cinema-front:
+    build: ./NovaCinema-front/Green-Cinema-front
+    container_name: cinema-front
+    ports:
+      - "5175:5175"
+    networks:
+      - app-net
+
+  cinema-back:
+    build: ./NovaCinema-back
+    container_name: cinema-back
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_TOOL_OPTIONS=-Xmx256m
+    networks:
+      - app-net
+
+  # ===========================
+  # Bike (Bikeway)
+  # ===========================
+  bike-front:
+    build: ./Bikeway-front/Green-Bicycle-front/bikeway-front
+    container_name: bike-front
+    ports:
+      - "5174:5174"
+    networks:
+      - app-net
+
+  bike-back:
+    build: ./Bikeway-back/bikeway-back
+    container_name: bike-back
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_TOOL_OPTIONS=-Xmx256m
+    networks:
+      - app-net
+
+# ===========================
+# Networks
+# ===========================
+networks:
+  app-net:
