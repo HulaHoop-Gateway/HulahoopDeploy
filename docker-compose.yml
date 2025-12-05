@@ -3,7 +3,7 @@ services:
   # Gateway (API Entry)
   # ===========================
   gateway-back:
-    build: ./gateway/Gateway
+    build: ./Gateway
     container_name: gateway-back
     ports:
       - "8080:8080"
@@ -30,7 +30,7 @@ services:
       - app-net
 
   blue-back:
-    build: ./Blue-back/blue-back
+    build: ./Blue-back
     container_name: blue-back
     ports:
       - "8090:8090"
@@ -44,7 +44,7 @@ services:
   # Red (Admin Front/Back)
   # ===========================
   red-front:
-    build: ./Red-front/Red-front
+    build: ./Red-front
     container_name: red-front
     ports:
       - "3000:3000"
@@ -52,7 +52,7 @@ services:
       - app-net
 
   red-back:
-    build: ./Red-back/red-back
+    build: ./Red-back
     container_name: red-back
     ports:
       - "8000:8000"
@@ -66,7 +66,7 @@ services:
   # Cinema (Movie)
   # ===========================
   cinema-front:
-    build: ./NovaCinema-front/Green-Cinema-front
+    build: ./NovaCinema-front
     container_name: cinema-front
     ports:
       - "5175:5175"
@@ -88,7 +88,7 @@ services:
   # Bike (Bikeway)
   # ===========================
   bike-front:
-    build: ./Bikeway-front/Green-Bicycle-front/bikeway-front
+    build: ./Bikeway-front
     container_name: bike-front
     ports:
       - "5174:5174"
@@ -96,7 +96,7 @@ services:
       - app-net
 
   bike-back:
-    build: ./Bikeway-back/bikeway-back
+    build: ./Bikeway-back
     container_name: bike-back
     ports:
       - "8081:8081"
