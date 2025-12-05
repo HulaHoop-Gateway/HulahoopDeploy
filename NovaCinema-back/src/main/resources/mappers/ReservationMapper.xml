@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.novacinema.reservation.model.dao.ReservationMapper">
+
+    <!-- 🎬 영화관 지점 -->
+    <resultMap id="cinemaFranchiseResultMap" type="com.novacinema.cinemaFranchise.model.dto.CinemaFranchiseDTO">
+        <id property="branchNum" column="branch_num"/>
+        <result property="branchName" column="branch_name"/>
+        <result property="address" column="address"/>
+    </resultMap>
+
+    <!-- 🎥 상영관 -->
+    <resultMap id="theaterResultMap" type="com.novacinema.theater.model.dto.TheaterDTO">
+        <id property="screeningNum" column="th_screening_num"/>
+        <result property="screeningNumber" column="screening_number"/>
+        <result property="branchNum" column="branch_num"/>
+        <association property="cinemaFranchisedto" resultMap="cinemaFranchiseResultMap"/>
+    </resultMap>
+
+    <!-- 🎞️ 영화 정보 -->
+    <resultMap id="infoResultMap" type="com.novacinema.info.model.dto.InfoDTO">
+        <id property="movieNum" column="movie_num"/>
+        <result property="movieTitle" column="movie_title"/>
+        <result property="runningTime" column="running_time"/>
+        <result property="audienceRating" column="audience_rating"/>
+    </resultMap>
+
+    <!-- 📅 상영 일정 정보 -->
+    <resultMap id="scheduleResultMap" type="com.novacinema.schedule.model.dto.ScheduleDTO">
+        <id property="scheduleNum" column="schedule_num"/>
+        <result property="screeningDate" column="screening_date"/>
+        <result property="screeningNum" column="screening_num"/>
+        <result property="movieNum" column="movie_num"/>
+        <association property="movieInfo" resultMap="infoResultMap"/>
+        <association property="theaterInfo" resultMap="theaterResultMap"/>
+    </resultMap>
+
+    <!-- 🎫 좌석 정보 -->
+    <resultMap id="seatResultMap" type="com.novacinema.seat.model.dto.SeatDTO">
+        <id property="seatCode" column="seat_code"/>
+        <result property="seatType" column="seat_type"/>
+        <result property="screeningNum" column="screening_num"/>
+        <result property="price" column="price"/>
+        <result property="isAisle" column="is_aisle"/>
+        <result property="rowLabel" column="row_label"/>
+        <result property="colNum" column="col_num"/>
+        <result property="seatRealNum" column="seat_real_num"/>
+    </resultMap>
+
+
+    <!-- 🙋 회원 정보 -->
+    <resultMap id="userResultMap" type="com.novacinema.user.model.dto.UserDTO">
+        <id property="memberCode" column="member_code"/>
+        <result property="memberName" column="member_name"/>
+        <result property="id" column="id"/>
+        <result property="password" column="password"/>
+        <result property="phoneNumber" column="phone_number"/>
+    </resultMap>
+
+    <!-- 📦 예약 정보 -->
+    <resultMap id="reservationInfoDetailResultMap" type="com.novacinema.reservation.model.dto.ReservationDTO">
+        <id property="reservationNum" column="reservation_num"/>
+        <result property="seatNumber" column="seat_number"/>
+        <result property="paymentTime" column="payment_time"/>
+        <result property="state" column="state"/>
+        <result property="phoneNumber" column="phone_number"/>
+        <result property="scheduleNum" column="schedule_num"/>
+        <result property="bookingGroupId" column="booking_group_id"/>
+        <result property="transactionNum" column="transaction_num"/> <!-- ✅ 추가 -->
+        <association property="seatDTO" resultMap="seatResultMap"/>
+        <association property="userDTO" resultMap="userResultMap"/>
+        <association property="scheduleDTO" resultMap="scheduleResultMap"/>
+    </resultMap>
+
+    <!-- 🔍 예약 전체 조회 -->
+    <select id="selectAllReservations" resultMap="reservationInfoDetailResultMap">
+        SELECT
+        r.reservation_num,
+        r.seat_number,
+        r.payment_time,
+        r.state,
+        r.phone_number,
+        r.schedule_num,
+        r.booking_group_id,
+        r.transaction_num,
+
+        s.seat_code,
+        s.seat_type,
+        s.price,
+        s.screening_num,
+        s.is_aisle,
+        s.row_label,
+        s.col_num,
+
+        m.member_code,
+        m.member_name,
+        m.id,
+        m.password,
+        m.phone_number,
+
+        sc.schedule_num,
+        sc.screening_date,
+        sc.screening_num,
+        sc.movie_num,
+
+        i.movie_num,
+        i.movie_title,
+        i.running_time,
+        i.audience_rating,
+
+        th.screening_num AS th_screening_num,
+        th.screening_number,
+        th.branch_num,
+
+        cf.branch_name,
+        cf.address
+
+        FROM T_ReservationInfo r
+        JOIN T_Seat s ON r.seat_number = s.seat_code
+        JOIN T_MemberInfo m ON r.phone_number = m.phone_number
+        JOIN T_Schedule sc ON r.schedule_num = sc.schedule_num
+        JOIN T_Info i ON sc.movie_num = i.movie_num
+        JOIN T_Theater th ON sc.screening_num = th.screening_num
+        JOIN T_CinemaFranchise cf ON th.branch_num = cf.branch_num
+
+
+    </select>
+
+    <!-- 🔍 특정 회원의 예약 조회 -->
+    <select id="selectReservationsByPhoneNumber" parameterType="string" resultMap="reservationInfoDetailResultMap">
+        SELECT
+        r.reservation_num,
+        r.seat_number,
+        r.payment_time,
+        r.state,
+        r.phone_number,
+        r.schedule_num,
+        r.booking_group_id,
+        r.transaction_num,
+
+        s.seat_code,
+        s.seat_type,
+        s.price,
+        s.screening_num,
+        s.is_aisle,
+        s.row_label,
+        s.col_num,
+
+        m.member_code,
+        m.member_name,
+        m.id,
+        m.password,
+        m.phone_number,
+
+        sc.schedule_num,
+        sc.screening_date,
+        sc.screening_num,
+        sc.movie_num,
+
+        i.movie_num,
+        i.movie_title,
+        i.running_time,
+        i.audience_rating,
+
+        th.screening_num AS th_screening_num,
+        th.screening_number,
+        th.branch_num,
+
+        cf.branch_name,
+        cf.address
+
+        FROM T_ReservationInfo r
+        JOIN T_Seat s ON r.seat_number = s.seat_code
+        JOIN T_MemberInfo m ON r.phone_number = m.phone_number
+        JOIN T_Schedule sc ON r.schedule_num = sc.schedule_num
+        JOIN T_Info i ON sc.movie_num = i.movie_num
+        JOIN T_Theater th ON sc.screening_num = th.screening_num
+        JOIN T_CinemaFranchise cf ON th.branch_num = cf.branch_num
+        WHERE r.phone_number = #{phoneNumber}
+
+    </select>
+
+    <!-- 📝 예약 등록 -->
+    <insert id="insertReservation" parameterType="com.novacinema.reservation.model.dto.ReservationDTO">
+        INSERT INTO T_ReservationInfo (
+        reservation_num,
+        seat_number,
+        payment_time,
+        state,
+        phone_number,
+        schedule_num,
+        booking_group_id,
+        transaction_num
+        ) VALUES (
+        #{reservationNum},
+        #{seatNumber},
+        #{paymentTime},
+        #{state},
+        #{phoneNumber},
+        #{scheduleNum},
+        #{bookingGroupId},
+        #{transactionNum}
+        )
+    </insert>
+
+    <select id="findMaxReservationIdForToday" resultType="String">
+        SELECT MAX(reservation_num)
+        FROM T_ReservationInfo
+        WHERE reservation_num LIKE #{prefix}
+    </select>
+
+    <update id="updateReservationState" parameterType="map">
+        UPDATE T_ReservationInfo
+        SET state = #{state}
+        WHERE reservation_num = #{reservationNum}
+    </update>
+    <select id="selectReservationByNum"
+            parameterType="string"
+            resultMap="reservationInfoDetailResultMap">
+        SELECT
+        r.reservation_num,
+        r.seat_number,
+        r.payment_time,
+        r.state,
+        r.phone_number,
+        r.schedule_num,
+        r.transaction_num,
+
+        s.seat_code,
+        s.seat_type,
+        s.price,
+        s.screening_num,
+        s.is_aisle,
+        s.row_label,
+        s.col_num,
+
+        m.member_code,
+        m.member_name,
+        m.id,
+        m.password,
+        m.phone_number,
+
+        sc.schedule_num,
+        sc.screening_date,
+        sc.screening_num,
+        sc.movie_num,
+
+        i.movie_num,
+        i.movie_title,
+        i.running_time,
+        i.audience_rating,
+
+        th.screening_num AS th_screening_num,
+        th.screening_number,
+        th.branch_num,
+
+        cf.branch_name,
+        cf.address
+
+        FROM T_ReservationInfo r
+        JOIN T_Seat s ON r.seat_number = s.seat_code
+        JOIN T_MemberInfo m ON r.phone_number = m.phone_number
+        JOIN T_Schedule sc ON r.schedule_num = sc.schedule_num
+        JOIN T_Info i ON sc.movie_num = i.movie_num
+        JOIN T_Theater th ON sc.screening_num = th.screening_num
+        JOIN T_CinemaFranchise cf ON th.branch_num = cf.branch_num
+
+        WHERE r.reservation_num = #{reservationNum}
+    </select>
+
+    <!-- 🔍 트랜잭션 번호로 예매 조회 (⭐ 추가) -->
+    <select id="findByTransactionNum" parameterType="long" resultMap="reservationInfoDetailResultMap">
+        SELECT
+        r.reservation_num,
+        r.seat_number,
+        r.payment_time,
+        r.state,
+        r.phone_number,
+        r.schedule_num,
+        r.booking_group_id,
+        r.transaction_num,
+
+        s.seat_code,
+        s.seat_type,
+        s.price,
+        s.screening_num,
+        s.is_aisle,
+        s.row_label,
+        s.col_num,
+
+        m.member_code,
+        m.member_name,
+        m.id,
+        m.password,
+        m.phone_number,
+
+        sc.schedule_num,
+        sc.screening_date,
+        sc.screening_num,
+        sc.movie_num,
+
+        i.movie_num,
+        i.movie_title,
+        i.running_time,
+        i.audience_rating,
+
+        th.screening_num AS th_screening_num,
+        th.screening_number,
+        th.branch_num,
+
+        cf.branch_name,
+        cf.address
+
+        FROM T_ReservationInfo r
+        JOIN T_Seat s ON r.seat_number = s.seat_code
+        JOIN T_MemberInfo m ON r.phone_number = m.phone_number
+        JOIN T_Schedule sc ON r.schedule_num = sc.schedule_num
+        JOIN T_Info i ON sc.movie_num = i.movie_num
+        JOIN T_Theater th ON sc.screening_num = th.screening_num
+        JOIN T_CinemaFranchise cf ON th.branch_num = cf.branch_num
+
+        WHERE r.transaction_num = #{transactionNum}
+    </select>
+
+    <!-- 🔄 트랜잭션 번호 업데이트 (⭐ 추가) -->
+    <update id="updateTransactionNum">
+        UPDATE T_ReservationInfo
+        SET transaction_num = #{transactionNum}
+        WHERE booking_group_id = #{bookingGroupId}
+    </update>
+
+    <!-- 🔄 트랜잭션 번호 업데이트 (PhoneNumber + ScheduleNum) (⭐ 추가) -->
+    <update id="updateTransactionNumByScheduleAndPhone">
+        UPDATE T_ReservationInfo
+        SET transaction_num = #{transactionNum}
+        WHERE phone_number = #{phoneNumber}
+          AND schedule_num = #{scheduleNum}
+          AND state = '예매완료'
+          AND transaction_num IS NULL
+    </update>
+
+
+</mapper>

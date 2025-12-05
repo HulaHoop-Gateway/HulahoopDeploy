@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hulahoop.redback.monitor.model.dao.BrandMapper">
+
+    <select id="selectServersPaged"
+            parameterType="com.hulahoop.redback.common.paging.dto.PageRequestDTO"
+            resultType="map">
+
+        SELECT
+        b.brand_code AS brandCode,
+        b.brand_name AS brandName,
+        b.category_code AS categoryCode,
+        b.category_name AS categoryName,
+        b.description
+        FROM T_Brand b
+
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                b.brand_name LIKE CONCAT('%', #{keyword}, '%')
+                OR b.category_name LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+
+        ORDER BY b.brand_name ASC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countServers"
+            parameterType="com.hulahoop.redback.common.paging.dto.PageRequestDTO"
+            resultType="long">
+
+        SELECT COUNT(*)
+        FROM T_Brand b
+
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                b.brand_name LIKE CONCAT('%', #{keyword}, '%')
+                OR b.category_name LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+
+    </select>
+
+</mapper>

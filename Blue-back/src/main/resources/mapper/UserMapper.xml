@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hulahoop.blueback.member.model.dao.UserMapper">
+
+    <!-- ID로 회원 조회 -->
+    <select id="findById" parameterType="string" resultType="com.hulahoop.blueback.member.model.dto.MemberDTO">
+        SELECT *
+        FROM T_Member
+        WHERE id = #{id}
+        AND member_yn = 'Y'
+    </select>
+
+    <!-- 회원 코드로 회원 조회 -->
+    <select id="findByMemberCode" parameterType="string" resultType="com.hulahoop.blueback.member.model.dto.MemberDTO">
+        SELECT *
+        FROM T_Member
+        WHERE member_code = #{memberCode}
+        AND member_yn = 'Y'
+    </select>
+
+    <!-- 회원 등록 -->
+    <insert id="insertMember" parameterType="com.hulahoop.blueback.member.model.dto.MemberDTO">
+        INSERT INTO T_Member (
+        member_code, name, id, password,
+        phone_num, email, address,
+        user_type, notification_status, member_yn
+        ) VALUES (
+        #{memberCode}, #{name}, #{id}, #{password},
+        #{phoneNum}, #{email}, #{address},
+        #{userType}, #{notificationStatus}, 'Y'
+        )
+    </insert>
+
+    <!-- 회원 정보 수정 -->
+    <update id="updateMember" parameterType="com.hulahoop.blueback.member.model.dto.MemberDTO">
+        UPDATE T_Member
+        SET
+        phone_num = #{phoneNum},
+        email = #{email},
+        address = #{address},
+        notification_status = #{notificationStatus}
+        WHERE member_code = #{memberCode}
+        AND member_yn = 'Y'
+    </update>
+
+    <!-- SNS 알림 설정 변경 -->
+    <update id="updateNotification">
+        UPDATE T_Member
+        SET notification_status = #{status}
+        WHERE member_code = #{memberCode}
+        AND member_yn = 'Y'
+    </update>
+
+    <!-- 비밀번호 변경 -->
+    <update id="updatePassword">
+        UPDATE T_Member
+        SET password = #{password}
+        WHERE member_code = #{memberCode}
+        AND member_yn = 'Y'
+    </update>
+
+    <!-- 회원 탈퇴 (삭제 X → 비활성 플래그 변경) -->
+    <update id="withdrawMember">
+        UPDATE T_Member
+        SET member_yn = 'N'
+        WHERE member_code = #{memberCode}
+    </update>
+
+    <!-- 아이디 중복 확인 -->
+    <select id="countById" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM T_Member
+        WHERE id = #{id}
+        AND member_yn = 'Y'
+    </select>
+
+    <!-- 이메일 중복 확인 -->
+    <select id="countByEmail" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM T_Member WHERE email = #{email} AND member_yn = 'Y'
+    </select>
+    <!-- 전화번호 중복 확인 -->
+    <select id="countByPhoneNum" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM T_Member WHERE phone_num = #{phoneNum} AND member_yn = 'Y'
+    </select>
+
+    <!-- 이름+이메일로 회원 조회 (아이디 찾기)  -->
+    <select id="findByNameAndEmail" resultType="com.hulahoop.blueback.member.model.dto.MemberDTO">
+        SELECT * FROM T_Member WHERE name = #{name} AND email = #{email} AND member_yn = 'Y'
+    </select>
+    <!-- 아이디+이메일로 회원 조회 (비밀번호 재설정/임시비번)  -->
+    <select id="findByIdAndEmail" resultType="com.hulahoop.blueback.member.model.dto.MemberDTO">
+        SELECT * FROM T_Member WHERE id = #{id} AND email = #{email} AND member_yn = 'Y'
+    </select>
+
+
+    <!-- 마지막 회원 코드 조회 -->
+    <select id="findLastMemberCode" resultType="string">
+        SELECT member_code
+        FROM T_Member
+        WHERE member_code LIKE 'U%'
+        ORDER BY member_code DESC
+        LIMIT 1
+    </select>
+
+</mapper>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>CinemaTest</title>
+</head>
+<body>
+<h1>🎬 Cinema 좌석 조회</h1>
+
+<label for="scheduleSelect">상영 일정 선택:</label>
+<select id="scheduleSelect">
+    <option value="5001">5001</option>
+    <option value="5002">5002</option>
+    <option value="5003">5003</option>
+    <option value="5004">5004</option>
+    <option value="5005">5005</option>
+</select>
+
+<label for="queryType">조회 유형:</label>
+<select id="queryType">
+    <option value="available">예약 가능 좌석</option>
+    <option value="all">전체 좌석</option>
+</select>
+
+<button onclick="loadSeats()">조회</button>
+
+<h2>📋 좌석 목록</h2>
+<ul id="seatList"></ul>
+
+<script>
+    function loadSeats() {
+        const scheduleNum = document.getElementById('scheduleSelect').value;
+        const queryType = document.getElementById('queryType').value;
+        const endpoint = `http://localhost:8082/seatReservation/${queryType}?scheduleNum=${scheduleNum}`;
+
+        fetch(endpoint)
+            .then(response => response.json())
+            .then(data => {
+                const seatList = document.getElementById('seatList');
+                seatList.innerHTML = '';
+
+                if (data.length === 0) {
+                    seatList.innerHTML = '<li>조회된 좌석이 없습니다.</li>';
+                    return;
+                }
+
+                data.forEach(seat => {
+                    const li = document.createElement('li');
+                    li.textContent = `좌석번호: ${seat.rowLabel}${seat.colNum} / 유형: ${seat.seatType} / 가격: ${seat.price}원 / 통로: ${seat.isAisle ? 'O' : 'X'}`;
+                    seatList.appendChild(li);
+                });
+            })
+            .catch(error => {
+                console.error('좌석 조회 실패:', error);
+                document.getElementById('seatList').innerHTML = '<li>서버 오류로 좌석을 불러올 수 없습니다.</li>';
+            });
+    }
+</script>
+</body>
+</html>

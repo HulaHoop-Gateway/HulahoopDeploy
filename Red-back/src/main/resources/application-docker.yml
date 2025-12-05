@@ -1,0 +1,41 @@
+server:
+  port: 8000
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:mysql://your-rds-endpoint:3306/hulahoopdb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8}
+    username: ${DB_USERNAME:your-db-username}
+    password: ${DB_PASSWORD:your-db-password}
+
+mybatis:
+  mapper-locations: classpath:mappers/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+hulahoop:
+  servers:
+    - brandCode: BR0001
+      baseUrl: http://cinema-back
+      port: 8082
+      healthPath: /health
+
+    - brandCode: BR0002
+      baseUrl: http://bike-back
+      port: 8081
+      healthPath: /health
+
+    - brandCode: BR0003
+      baseUrl: http://gateway-back
+      port: 8080
+      healthPath: /health
+
+    - brandCode: BR0004
+      baseUrl: http://blue-back
+      port: 8090
+      healthPath: /health
+
+admin:
+  jwt:
+    secret: ${JWT_SECRET:your-jwt-secret-key-min-256-bits}
+    expiration-ms: 3600000

@@ -1,0 +1,323 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+
+/* ========================================
+   VARIABLES
+   ======================================== */
+.mypage-screen {
+  --aurora-blue: #4B90FF;
+  --aurora-purple: #845BFF;
+  --deep-space: #1F1E31;
+  --frost-white: #F0F2F5;
+  --mist-gray: #A3A6B3;
+
+  background-color: var(--deep-space);
+  font-family: "Pretendard", 'Outfit', -apple-system, sans-serif;
+  min-height: 100vh;
+  padding: 80px 20px 60px;
+  color: var(--frost-white);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ========================================
+   TITLE
+   ======================================== */
+.mypage-title {
+  font-size: 20px;
+  font-weight: 300;
+  color: var(--frost-white);
+  margin-bottom: 50px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: 2px;
+}
+
+.mypage-title .version {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--aurora-blue);
+  padding: 3px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--aurora-blue);
+}
+
+/* ========================================
+   CONTAINER
+   ======================================== */
+.mypage-container {
+  max-width: 600px;
+  width: 100%;
+}
+
+.mypage-body {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+/* ========================================
+   SECTIONS
+   ======================================== */
+.mypage-section {
+  border-left: 3px solid var(--aurora-blue);
+  padding-left: 30px;
+}
+
+.mypage-section h2 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--mist-gray);
+  margin-bottom: 25px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* ========================================
+   ACCOUNT SECTION - Includes Update Button
+   ======================================== */
+.account-section .btn-update {
+  margin-top: 30px;
+  padding: 12px 40px;
+  background: transparent;
+  border: 2px solid var(--aurora-blue);
+  border-radius: 0;
+  color: var(--aurora-blue);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.account-section .btn-update:hover {
+  background: var(--aurora-blue);
+  color: var(--deep-space);
+}
+
+/* ========================================
+   FORM FIELDS
+   ======================================== */
+.mypage-field {
+  margin-bottom: 24px;
+}
+
+.mypage-field:last-child {
+  margin-bottom: 0;
+}
+
+.mypage-field label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mist-gray);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.mypage-field input {
+  width: 100%;
+  padding: 0 0 10px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--frost-white);
+  font-size: 15px;
+  transition: border-color 0.3s;
+}
+
+.mypage-field input:focus {
+  border-bottom-color: var(--aurora-blue);
+  outline: none;
+}
+
+.mypage-field input:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   NOTIFICATION CHECKBOX (in Account Section)
+   ======================================== */
+.notification-checkbox {
+  margin-top: 30px;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.notification-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--aurora-blue);
+  cursor: pointer;
+}
+
+.notification-checkbox label {
+  font-size: 14px;
+  color: var(--frost-white);
+  cursor: pointer;
+  margin: 0;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* ========================================
+   PASSWORD SECTION
+   ======================================== */
+.password-change-section {
+  border-left: 3px solid var(--aurora-purple);
+  padding-left: 30px;
+}
+
+.password-toggle {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--mist-gray);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  user-select: none;
+  padding: 16px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: color 0.2s;
+  margin: 0;
+}
+
+.password-toggle:hover {
+  color: var(--frost-white);
+}
+
+.password-form {
+  padding-top: 10px;
+}
+
+.btn-password-change {
+  width: 100%;
+  margin-top: 30px;
+  padding: 14px;
+  background: transparent;
+  border: 2px solid var(--aurora-purple);
+  color: var(--aurora-purple);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-password-change:hover {
+  background: var(--aurora-purple);
+  color: var(--deep-space);
+}
+
+/* ========================================
+   TERMS SECTION
+   ======================================== */
+.terms-section {
+  border-left: 3px solid var(--aurora-blue);
+}
+
+.mypage-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mypage-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--frost-white);
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.mypage-list li:hover {
+  color: var(--aurora-blue);
+}
+
+.mypage-list li:last-child {
+  border-bottom: none;
+}
+
+/* ========================================
+   DELETE SECTION
+   ======================================== */
+.mypage-delete-section {
+  margin-top: 60px;
+  padding-top: 40px;
+  border-top: 1px solid rgba(255, 80, 80, 0.2);
+  display: flex;
+  justify-content: center;
+}
+
+.btn-delete {
+  padding: 12px 40px;
+  background: transparent;
+  border: 1px solid rgba(255, 80, 80, 0.4);
+  border-radius: 0;
+  color: rgba(255, 80, 80, 0.7);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-delete:hover {
+  border-color: #ff5555;
+  color: #ff5555;
+  background: rgba(255, 80, 80, 0.05);
+}
+
+/* ========================================
+   LOADING
+   ======================================== */
+.loading-text {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--mist-gray);
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  .mypage-screen {
+    padding: 40px 20px;
+  }
+
+  .mypage-title {
+    font-size: 18px;
+    margin-bottom: 40px;
+  }
+
+  .mypage-section,
+  .password-change-section {
+    padding-left: 20px;
+  }
+
+  .account-section .btn-update,
+  .btn-delete,
+  .btn-password-change {
+    width: 100%;
+  }
+}

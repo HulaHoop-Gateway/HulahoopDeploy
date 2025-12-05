@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hulahoop.redback.statistics.model.dao.StatisticsMapper">
+
+    <!-- ========================================================= -->
+    <!-- 📌 1) 통계 목록 조회 (페이징 + 필터 + 정렬 + 비중 계산)     -->
+    <!-- ========================================================= -->
+    <select id="selectStatistics"
+            parameterType="com.hulahoop.redback.common.paging.dto.PageRequestDTO"
+            resultType="com.hulahoop.redback.statistics.model.dto.StatisticsDTO">
+
+        SELECT
+        t.merchant_code AS merchantCode,
+        COALESCE(m.merchant_name, '알 수 없음') AS merchantName,
+        <choose>
+            <when test="groupBy != null and groupBy == 'month'">
+                DATE_FORMAT(t.payment_date, '%Y-%m') AS paymentDate,
+            </when>
+            <otherwise>
+                DATE(t.payment_date) AS paymentDate,
+            </otherwise>
+        </choose>
+
+        COUNT(CASE WHEN t.status IN ('S', 'P') THEN 1 END) AS transactionCount,
+
+        ROUND(
+        (COUNT(CASE WHEN t.status IN ('S', 'P') THEN 1 END) * 100.0) /
+        NULLIF((
+        SELECT COUNT(*)
+        FROM T_TransactionHistory t2
+        WHERE t2.status IN ('S', 'P')
+        <if test="startDate != null and endDate != null">
+            AND t2.payment_date BETWEEN #{startDate} AND #{endDate}
+        </if>
+        ), 0)
+        , 2) AS transactionRatio,
+
+        SUM(CASE WHEN t.status IN ('S', 'P') THEN t.amount_used ELSE 0 END) AS totalAmount,
+
+        COUNT(CASE WHEN t.status = 'R' THEN 1 END) AS refundCount,
+
+        SUM(CASE WHEN t.status = 'R' THEN t.amount_used ELSE 0 END) AS refundAmount,
+
+        (
+        SUM(CASE WHEN t.status IN ('S', 'P') THEN t.amount_used ELSE 0 END)
+        - SUM(CASE WHEN t.status = 'R' THEN t.amount_used ELSE 0 END)
+        ) AS netAmount,
+
+        ROUND(
+        (
+        (
+        SUM(CASE WHEN t.status IN ('S', 'P') THEN t.amount_used ELSE 0 END)
+        - SUM(CASE WHEN t.status = 'R' THEN t.amount_used ELSE 0 END)
+        ) * 100.0
+        )
+        /
+        NULLIF((
+        SELECT
+        SUM(CASE WHEN t3.status IN ('S', 'P') THEN t3.amount_used ELSE 0 END)
+        - SUM(CASE WHEN t3.status = 'R' THEN t3.amount_used ELSE 0 END)
+        FROM T_TransactionHistory t3
+        <if test="startDate != null and endDate != null">
+            WHERE t3.payment_date BETWEEN #{startDate} AND #{endDate}
+        </if>
+        ), 0)
+        , 2) AS ratioPercentage
+
+        FROM T_TransactionHistory t
+        LEFT JOIN T_Merchant m ON t.merchant_code = m.merchant_code
+        LEFT JOIN T_Brand b ON m.brand_code = b.brand_code   <!-- 🔥 추가됨 -->
+
+        WHERE 1=1
+        <if test="startDate != null and endDate != null">
+            AND t.payment_date BETWEEN #{startDate} AND #{endDate}
+        </if>
+
+        <if test="merchantCode != null and merchantCode != ''">
+            AND t.merchant_code = #{merchantCode}
+        </if>
+
+        <!-- 🔥 카테고리 필터 정상화 -->
+        <if test="categoryCode != null and categoryCode != ''">
+            AND b.category_code = #{categoryCode}
+        </if>
+
+        <!-- 🔥 브랜드 필터 추가 -->
+        <if test="brandCode != null and brandCode != ''">
+            AND b.brand_code = #{brandCode}
+        </if>
+
+        <choose>
+            <when test="groupBy != null and groupBy == 'month'">
+                GROUP BY t.merchant_code, m.merchant_name, DATE_FORMAT(t.payment_date, '%Y-%m')
+            </when>
+            <otherwise>
+                GROUP BY t.merchant_code, m.merchant_name, DATE(t.payment_date)
+            </otherwise>
+        </choose>
+
+        <choose>
+            <when test="sort == 'transaction_asc'">ORDER BY transactionCount ASC</when>
+            <when test="sort == 'transaction_desc'">ORDER BY transactionCount DESC</when>
+
+            <when test="sort == 'amount_asc'">ORDER BY totalAmount ASC</when>
+            <when test="sort == 'amount_desc'">ORDER BY totalAmount DESC</when>
+
+            <when test="sort == 'refund_asc'">ORDER BY refundCount ASC</when>
+            <when test="sort == 'refund_desc'">ORDER BY refundCount DESC</when>
+
+            <when test="sort == 'net_asc'">ORDER BY netAmount ASC</when>
+            <when test="sort == 'net_desc'">ORDER BY netAmount DESC</when>
+
+            <when test="sort == 'percentage_asc'">ORDER BY ratioPercentage ASC</when>
+            <when test="sort == 'percentage_desc'">ORDER BY ratioPercentage DESC</when>
+
+            <when test="sort == 'ratio_asc'">ORDER BY transactionRatio ASC</when>
+            <when test="sort == 'ratio_desc'">ORDER BY transactionRatio DESC</when>
+
+            <when test="sort == 'date_asc'">ORDER BY paymentDate ASC</when>
+            <otherwise>ORDER BY paymentDate DESC</otherwise>
+        </choose>
+
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+
+    <!-- ========================================================= -->
+    <!-- 📌 2) 전체 카운트 조회 (페이징용)                         -->
+    <!-- ========================================================= -->
+    <select id="countStatistics"
+            parameterType="com.hulahoop.redback.common.paging.dto.PageRequestDTO"
+            resultType="long">
+
+        SELECT COUNT(*) FROM (
+        SELECT 1
+        FROM T_TransactionHistory t
+        LEFT JOIN T_Merchant m ON t.merchant_code = m.merchant_code
+        LEFT JOIN T_Brand b ON m.brand_code = b.brand_code   <!-- 🔥 추가됨 -->
+
+        WHERE 1=1
+        <if test="startDate != null and endDate != null">
+            AND t.payment_date BETWEEN #{startDate} AND #{endDate}
+        </if>
+
+        <if test="merchantCode != null and merchantCode != ''">
+            AND t.merchant_code = #{merchantCode}
+        </if>
+
+        <if test="categoryCode != null and categoryCode != ''">
+            AND b.category_code = #{categoryCode}
+        </if>
+
+        <!-- 🔥 brandCode 필터 추가 -->
+        <if test="brandCode != null and brandCode != ''">
+            AND b.brand_code = #{brandCode}
+        </if>
+
+        <choose>
+            <when test="groupBy != null and groupBy == 'month'">
+                GROUP BY t.merchant_code, DATE_FORMAT(t.payment_date, '%Y-%m')
+            </when>
+            <otherwise>
+                GROUP BY t.merchant_code, DATE(t.payment_date)
+            </otherwise>
+        </choose>
+        ) AS sub
+
+    </select>
+
+</mapper>

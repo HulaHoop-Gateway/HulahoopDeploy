@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hulahoop.redback.auth.model.dao.AuthMapper">
+
+    <!-- 관리자 정보 조회 -->
+    <select id="findAdminById" parameterType="string" resultType="com.hulahoop.redback.auth.model.dto.AuthDTO">
+        SELECT
+            member_code,
+            name,
+            id,
+            password,
+            phone_num,
+            email,
+            address,
+            user_type
+        FROM T_Member
+        WHERE id = #{id}
+          AND user_type = 'A'
+          AND member_yn = 'Y'
+            LIMIT 1
+    </select>
+
+</mapper>

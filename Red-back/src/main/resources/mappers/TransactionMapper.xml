@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hulahoop.redback.transaction.model.dao.TransactionMapper">
+
+    <!-- 페이징 + 정렬 + 날짜 필터 적용 -->
+    <select id="selectTransactionsPaged"
+            parameterType="com.hulahoop.redback.common.paging.dto.PageRequestDTO"
+            resultType="com.hulahoop.redback.transaction.model.dto.TransactionDTO">
+
+        SELECT
+        transaction_num AS transactionNum,
+        member_code AS memberCode,
+        amount_used AS amountUsed,
+        payment_date AS paymentDate,
+        status,
+        start_date AS startDate,
+        end_date AS endDate,
+        merchant_code AS merchantCode,
+        original_transaction_num AS originalTransactionNum
+        FROM T_TransactionHistory
+
+        <where>
+            <if test="paymentDate != null and paymentDate != ''">
+                AND payment_date = #{paymentDate}
+            </if>
+
+            <if test="startDate != null and startDate != ''">
+                AND payment_date <![CDATA[ >= ]]> #{startDate}
+            </if>
+
+            <if test="endDate != null and endDate != ''">
+                AND payment_date <![CDATA[ <= ]]> #{endDate}
+            </if>
+        </where>
+
+        <choose>
+            <when test="sort == 'num_asc'">ORDER BY transaction_num ASC</when>
+            <when test="sort == 'num_desc'">ORDER BY transaction_num DESC</when>
+
+            <when test="sort == 'amount_asc'">ORDER BY amount_used ASC</when>
+            <when test="sort == 'amount_desc'">ORDER BY amount_used DESC</when>
+
+            <when test="sort == 'date_asc'">ORDER BY payment_date ASC</when>
+            <when test="sort == 'date_desc'">ORDER BY payment_date DESC</when>
+
+            <otherwise>ORDER BY payment_date DESC</otherwise>
+        </choose>
+
+        LIMIT #{size} OFFSET #{offset}
+
+    </select>
+
+    <!-- 총 개수 조회 (조건 동일 적용) -->
+    <select id="countTransactions"
+            parameterType="com.hulahoop.redback.common.paging.dto.PageRequestDTO"
+            resultType="long">
+
+        SELECT COUNT(*)
+        FROM T_TransactionHistory
+
+        <where>
+            <if test="paymentDate != null and paymentDate != ''">
+                AND payment_date = #{paymentDate}
+            </if>
+
+            <if test="startDate != null and startDate != ''">
+                AND payment_date <![CDATA[ >= ]]> #{startDate}
+            </if>
+
+            <if test="endDate != null and endDate != ''">
+                AND payment_date <![CDATA[ <= ]]> #{endDate}
+            </if>
+        </where>
+
+    </select>
+
+    <!-- 단일 조회 -->
+    <select id="selectTransactionById"
+            parameterType="int"
+            resultType="com.hulahoop.redback.transaction.model.dto.TransactionDTO">
+
+        SELECT
+            transaction_num AS transactionNum,
+            member_code AS memberCode,
+            amount_used AS amountUsed,
+            payment_date AS paymentDate,
+            status,
+            start_date AS startDate,
+            end_date AS endDate,
+            merchant_code AS merchantCode,
+            original_transaction_num AS originalTransactionNum
+        FROM T_TransactionHistory
+        WHERE transaction_num = #{transactionNum}
+
+    </select>
+
+    <!-- insert -->
+    <insert id="insertTransaction"
+            parameterType="com.hulahoop.redback.transaction.model.dto.TransactionDTO"
+            useGeneratedKeys="true"
+            keyProperty="transactionNum">
+
+        INSERT INTO T_TransactionHistory (
+            member_code,
+            amount_used,
+            payment_date,
+            status,
+            start_date,
+            end_date,
+            merchant_code,
+            original_transaction_num
+        ) VALUES (
+                     #{memberCode},
+                     #{amountUsed},
+                     #{paymentDate},
+                     #{status},
+                     #{startDate},
+                     #{endDate},
+                     #{merchantCode},
+                     #{originalTransactionNum}
+                 )
+
+    </insert>
+
+    <!-- 취소 상태 업데이트 -->
+    <update id="updateTransactionStatus"
+            parameterType="com.hulahoop.redback.transaction.model.dto.TransactionDTO">
+
+        UPDATE T_TransactionHistory
+        SET status = #{status},
+            original_transaction_num = #{originalTransactionNum}
+        WHERE transaction_num = #{transactionNum}
+
+    </update>
+
+</mapper>

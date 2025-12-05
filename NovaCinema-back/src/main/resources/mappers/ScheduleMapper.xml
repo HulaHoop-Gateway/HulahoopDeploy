@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.novacinema.schedule.model.dao.ScheduleMapper">
+
+    <!-- 🎬 기본 상영 일정 매핑 -->
+    <resultMap id="scheduleBasicResultMap" type="com.novacinema.schedule.model.dto.ScheduleDTO">
+        <id property="scheduleNum" column="schedule_num"/>
+        <result property="screeningDate" column="screening_date" javaType="java.time.LocalDateTime"/>
+        <result property="screeningNum" column="screening_num"/>
+        <result property="movieNum" column="movie_num"/>
+    </resultMap>
+
+    <!-- 🎥 상세 상영 일정 매핑 (영화 + 상영관 + 지점 정보 포함) -->
+    <resultMap id="scheduleDetailResultMap" type="com.novacinema.schedule.model.dto.ScheduleDTO">
+        <id property="scheduleNum" column="schedule_num"/>
+        <result property="screeningDate" column="screening_date" javaType="java.time.LocalDateTime"/>
+        <result property="screeningNum" column="screening_num"/>
+        <result property="movieNum" column="movie_num"/>
+
+        <association property="movieInfo" javaType="com.novacinema.info.model.dto.InfoDTO">
+            <result property="movieNum" column="movie_num"/>
+            <result property="movieTitle" column="movie_title"/>
+            <result property="runningTime" column="running_time"/>
+            <result property="audienceRating" column="audience_rating"/>
+        </association>
+
+        <association property="theaterInfo" javaType="com.novacinema.theater.model.dto.TheaterDTO">
+            <result property="screeningNum" column="screening_num"/>
+            <result property="screeningNumber" column="screening_number"/>
+            <result property="branchNum" column="branch_num"/>
+
+            <association property="cinemaFranchisedto" javaType="com.novacinema.cinemaFranchise.model.dto.CinemaFranchiseDTO">
+                <result property="branchNum" column="branch_num"/>
+                <result property="branchName" column="branch_name"/>
+                <result property="address" column="address"/>
+            </association>
+        </association>
+    </resultMap>
+
+    <!-- 📅 기본 전체 스케줄 조회 -->
+    <select id="selectAllSchedules" resultMap="scheduleDetailResultMap">
+        SELECT
+        s.schedule_num,
+        s.screening_date,
+        s.screening_num,
+        s.movie_num,
+        f.movie_title,
+        f.running_time,
+        f.audience_rating,
+        t.screening_number,
+        t.branch_num,
+        c.branch_name,
+        c.address
+        FROM T_Schedule s
+        JOIN T_Info f ON s.movie_num = f.movie_num
+        JOIN T_Theater t ON s.screening_num = t.screening_num
+        JOIN T_CinemaFranchise c ON t.branch_num = c.branch_num
+    </select>
+
+    <!-- 🔥 날짜 기반 조건 추가: 오늘/내일/특정 날짜 필터링 -->
+    <select id="findSchedulesByBranchNumAndDate" resultMap="scheduleDetailResultMap">
+        SELECT
+        s.schedule_num,
+        s.screening_date,
+        s.screening_num,
+        s.movie_num,
+        f.movie_title,
+        f.running_time,
+        f.audience_rating,
+        t.screening_number,
+        t.branch_num,
+        c.branch_name,
+        c.address
+        FROM T_Schedule s
+        JOIN T_Info f ON s.movie_num = f.movie_num
+        JOIN T_Theater t ON s.screening_num = t.screening_num
+        JOIN T_CinemaFranchise c ON t.branch_num = c.branch_num
+        WHERE t.branch_num = #{branchNum}
+
+        <!-- ⭐ 특정 날짜가 오면 해당 날짜만 조회 -->
+        <if test="screeningDate != null and screeningDate != '' and screeningDate != 'today' and screeningDate != 'tomorrow'">
+            AND DATE(s.screening_date) = DATE(#{screeningDate})
+        </if>
+
+        <!-- ⭐ 내일: 날짜만 필터링하고 시간 조건은 적용하지 않음 -->
+        <if test="screeningDate == 'tomorrow'">
+            AND DATE(s.screening_date) = DATE(DATE_ADD(CURDATE(), INTERVAL 1 DAY))
+        </if>
+
+        <!-- ⭐ 오늘: 날짜 + 현재 시간 이후만 -->
+        <if test="screeningDate == 'today'">
+            AND DATE(s.screening_date) = CURDATE()
+            AND TIME(s.screening_date) >= CURTIME()
+        </if>
+
+        <!-- ⭐ 날짜 지정이 전혀 없으면 오늘 + 현재 시간 이후만 -->
+        <if test="screeningDate == null or screeningDate == ''">
+            AND DATE(s.screening_date) = CURDATE()
+            AND TIME(s.screening_date) >= CURTIME()
+        </if>
+
+        ORDER BY s.screening_date ASC
+    </select>
+
+    <select id="findMerchantCodeByScheduleNum" resultType="string">
+        SELECT c.branch_name
+        FROM T_Schedule s
+        JOIN T_Theater t ON s.screening_num = t.screening_num
+        JOIN T_CinemaFranchise c ON t.branch_num = c.branch_num
+        WHERE s.schedule_num = #{scheduleNum}
+        LIMIT 1
+    </select>
+
+    <!-- ⭐ 특정 스케줄 상세 조회 (영화 정보 포함) -->
+    <select id="selectScheduleByNum" resultMap="scheduleDetailResultMap">
+        SELECT
+        s.schedule_num,
+        s.screening_date,
+        s.screening_num,
+        s.movie_num,
+        f.movie_title,
+        f.running_time,
+        f.audience_rating,
+        t.screening_number,
+        t.branch_num,
+        c.branch_name,
+        c.address
+        FROM T_Schedule s
+        JOIN T_Info f ON s.movie_num = f.movie_num
+        JOIN T_Theater t ON s.screening_num = t.screening_num
+        JOIN T_CinemaFranchise c ON t.branch_num = c.branch_num
+        WHERE s.schedule_num = #{scheduleNum}
+    </select>
+
+
+
+
+</mapper>

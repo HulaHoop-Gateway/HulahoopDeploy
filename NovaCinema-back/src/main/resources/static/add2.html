@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>CinemaTest</title>
+</head>
+<body>
+<h1>🎬 CinemaTest</h1>
+
+<!-- 스케줄 선택 -->
+<h3>상영 일정 선택</h3>
+<select id="scheduleSelect">
+    <option value="">-- 스케줄 선택 --</option>
+    <option value="5001">5001</option>
+    <option value="5002">5002</option>
+    <option value="5003">5003</option>
+    <option value="5004">5004</option>
+    <option value="5005">5005</option>
+</select>
+<button onclick="loadAvailableSeats()">좌석 조회</button>
+
+<!-- 좌석 목록 -->
+<h3>좌석 선택</h3>
+<ul id="seatList"></ul>
+
+<!-- 사용자 입력 폼 -->
+<h3>예매 정보 입력</h3>
+<label>회원 코드: <input type="number" id="memberCode" /></label><br>
+<label>결제 시간: <input type="datetime-local" id="paymentTime" /></label><br><br>
+
+<!-- 예매 버튼 -->
+<button onclick="submitReservation()">예매하기</button>
+
+<script>
+    let selectedSeat = null;
+
+    function loadAvailableSeats() {
+        const scheduleNum = document.getElementById('scheduleSelect').value;
+        if (!scheduleNum) {
+            alert('상영 일정을 선택해주세요.');
+            return;
+        }
+
+        fetch(`http://localhost:8082/seatReservation/available?scheduleNum=${scheduleNum}`)
+            .then(response => response.json())
+            .then(data => {
+                const seatList = document.getElementById('seatList');
+                seatList.innerHTML = '';
+                data.forEach(seat => {
+                    const seatLabel = seat.seatRealNum ?? `${seat.rowLabel}${seat.colNum}`;
+                    const price = seat.sale ?? seat.price;
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <label>
+                            <input type="radio" name="seatSelect" value="${seat.seatCode}" />
+                            ${seatLabel} (${seat.seatType}, ${price}원)
+                        </label>
+                    `;
+                    seatList.appendChild(li);
+                });
+
+                document.querySelectorAll('input[name="seatSelect"]').forEach(input => {
+                    input.addEventListener('change', () => {
+                        selectedSeat = input.value;
+                    });
+                });
+            })
+            .catch(error => {
+                console.error('좌석 조회 실패:', error);
+                alert('좌석 정보를 불러오는 데 실패했습니다.');
+            });
+    }
+
+    function submitReservation() {
+        const scheduleNum = document.getElementById('scheduleSelect').value;
+        const memberCode = document.getElementById('memberCode').value;
+        const paymentTime = document.getElementById('paymentTime').value;
+
+        if (!selectedSeat || !memberCode || !paymentTime || !scheduleNum) {
+            alert('모든 정보를 입력하고 좌석과 스케줄을 선택해주세요.');
+            return;
+        }
+
+        const payload = {
+            reservationDTO: {
+                seatNumber: parseInt(selectedSeat),
+                paymentTime: paymentTime,
+                state: "예약완료",
+                memberCode: parseInt(memberCode),
+                scheduleNum: parseInt(scheduleNum)
+            },
+            seatReservationDTO: {
+                scheduleNum: parseInt(scheduleNum),
+                seatCode: parseInt(selectedSeat),
+                reserved: true,
+                reservedAt: paymentTime
+            }
+        };
+
+        fetch('http://localhost:8082/api/reservations/insert2', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+            .then(response => response.text().then(msg => {
+                if (response.ok) {
+                    alert(msg); // 성공 메시지
+                    loadAvailableSeats();
+                } else {
+                    alert('예매 실패: ' + msg); // 실패 메시지
+                }
+            }))
+            .catch(error => {
+                console.error('예매 요청 실패:', error);
+                alert('서버 오류가 발생했습니다.');
+            });
+    }
+</script>
+</body>
+</html>

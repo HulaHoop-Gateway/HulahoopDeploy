@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hulahoop.redback.merchant.model.dao.MerchantMapper">
+
+    <!-- ✅ 페이징 + 검색 (keyword optional) -->
+    <select id="selectMerchantsPaged"
+            parameterType="com.hulahoop.redback.common.paging.dto.PageRequestDTO"
+            resultType="com.hulahoop.redback.merchant.model.dto.MerchantDTO">
+
+        SELECT
+        m.merchant_code AS merchantCode,
+        m.merchant_name AS merchantName,
+        m.business_id AS businessId,
+        b.brand_code AS brandCode,
+        b.brand_name AS brandName,
+        c.category_code AS categoryCode,
+        c.category_name AS categoryName,
+        m.registration_date AS registrationDate,
+        m.termination_date AS terminationDate,
+        m.contract_status AS contractStatus
+        FROM T_Merchant m
+        LEFT JOIN T_Brand b ON m.brand_code = b.brand_code
+        LEFT JOIN T_Category c ON b.category_code = c.category_code
+
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                m.merchant_name LIKE CONCAT('%', #{keyword}, '%')
+                OR m.merchant_code LIKE CONCAT('%', #{keyword}, '%')
+                OR m.business_id LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+
+        ORDER BY m.merchant_code
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+
+    <!-- ✅ 총 개수 조회 (동일 조건 적용) -->
+    <select id="countMerchants"
+            parameterType="com.hulahoop.redback.common.paging.dto.PageRequestDTO"
+            resultType="long">
+
+        SELECT COUNT(*)
+        FROM T_Merchant m
+        LEFT JOIN T_Brand b ON m.brand_code = b.brand_code
+        LEFT JOIN T_Category c ON b.category_code = c.category_code
+
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                m.merchant_name LIKE CONCAT('%', #{keyword}, '%')
+                OR m.merchant_code LIKE CONCAT('%', #{keyword}, '%')
+                OR m.business_id LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+
+    </select>
+
+
+    <!-- ✅ 가맹점명 → merchant_code 조회 -->
+    <select id="findMerchantCodeByName"
+            resultType="string"
+            parameterType="string">
+        SELECT merchant_code
+        FROM T_Merchant
+        WHERE merchant_name = #{merchantName}
+            LIMIT 1
+    </select>
+
+    <!-- ✅ 가맹점 생성 -->
+    <insert id="insertMerchant" parameterType="com.hulahoop.redback.merchant.model.dto.MerchantDTO">
+        INSERT INTO T_Merchant (
+            merchant_code,
+            merchant_name,
+            business_id,
+            brand_code,
+            registration_date,
+            termination_date,
+            contract_status
+        ) VALUES (
+            #{merchantCode},
+            #{merchantName},
+            #{businessId},
+            #{brandCode},
+            #{registrationDate},
+            #{terminationDate},
+            #{contractStatus}
+        )
+    </insert>
+
+    <!-- ✅ 가맹점 삭제 -->
+    <delete id="deleteMerchant" parameterType="string">
+        DELETE FROM T_Merchant
+        WHERE merchant_code = #{merchantCode}
+    </delete>
+
+    <!-- ✅ 가맹점 수정 -->
+    <update id="updateMerchant" parameterType="com.hulahoop.redback.merchant.model.dto.MerchantDTO">
+        UPDATE T_Merchant
+        SET
+            merchant_name = #{merchantName},
+            business_id = #{businessId},
+            brand_code = #{brandCode},
+            registration_date = #{registrationDate},
+            termination_date = #{terminationDate},
+            contract_status = #{contractStatus}
+        WHERE
+            merchant_code = #{merchantCode}
+    </update>
+
+</mapper>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.novacinema.cinemaFranchise.model.dao.MovieMapper">
+
+    <!-- ✅ 1. 가까운 영화관 조회 -->
+    <select id="findNearestCinemas" resultType="map">
+        SELECT
+            branch_num,
+            branch_name,
+            address
+        FROM T_CinemaFranchise
+        ORDER BY branch_num
+            LIMIT 3
+    </select>
+
+
+    <!-- ✅ 2. 특정 지점 오늘 + 현재시간 이후 상영 조회 -->
+    <select id="findNowPlaying" parameterType="string" resultType="map">
+        <![CDATA[
+        SELECT
+            i.movie_title AS movieTitle,
+            s.schedule_num AS scheduleNum,
+            s.screening_date AS screeningDate,
+            t.screening_number AS screeningNumber,   -- ✅ 수정완료
+            i.running_time AS runningTime,
+            i.audience_rating AS audienceRating
+        FROM T_Info i
+                 JOIN T_Schedule s ON i.movie_num = s.movie_num
+                 JOIN T_Theater t ON s.screening_num = t.screening_num
+                 JOIN T_CinemaFranchise c ON t.branch_num = c.branch_num
+        WHERE REPLACE(c.branch_name, ' ', '') LIKE CONCAT('%', REPLACE(#{branchName}, ' ', ''), '%')
+          AND s.screening_date >= NOW()
+          AND DATE(s.screening_date) = CURDATE()
+        ORDER BY s.screening_date ASC
+        ]]>
+    </select>
+
+
+    <!-- ✅ 3. 좌석 상태 조회 -->
+    <select id="findSeatStatus" parameterType="int" resultType="map">
+        SELECT
+            TS.seat_code,
+            TS.row_label,
+            TS.col_num,
+            TS.seat_type,
+            TS.price,
+            TS.is_aisle,
+            CASE
+                WHEN TS.is_aisle = 1 THEN FALSE      -- ✅ 통로는 예약 안됨 처리
+                ELSE COALESCE(TSR.reserved, FALSE)
+                END AS reserved
+        FROM T_Seat TS
+                 LEFT JOIN T_SeatReservation TSR
+                           ON TS.seat_code = TSR.seat_code
+                               AND TSR.schedule_num = #{scheduleNum}
+        WHERE
+            TS.screening_num = (
+                SELECT screening_num
+                FROM T_Schedule
+                WHERE schedule_num = #{scheduleNum}
+            )
+        ORDER BY TS.row_label ASC, TS.col_num ASC;
+    </select>
+
+
+
+    <!-- ✅ 4. 좌석 HOLD(예약) 처리 -->
+    <insert id="reserveSeat">
+        INSERT INTO T_SeatReservation (
+            schedule_num,
+            seat_code,
+            reserved
+        )
+        VALUES (
+                   #{scheduleNum},
+                   #{seatCode},
+                   TRUE
+               )
+    </insert>
+
+</mapper>

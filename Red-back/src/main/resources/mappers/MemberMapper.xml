@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hulahoop.redback.member.model.dao.MemberMapper">
+
+    <!-- 페이징 + 검색 -->
+    <select id="selectMembersPaged"
+            parameterType="com.hulahoop.redback.common.paging.dto.PageRequestDTO"
+            resultType="com.hulahoop.redback.member.model.dto.MemberDTO">
+
+        SELECT
+        member_code AS memberCode,
+        name,
+        id,
+        phone_num AS phoneNum,
+        email,
+        address,
+        user_type AS userType,
+        notification_status AS notificationStatus
+        FROM T_Member
+
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                name LIKE CONCAT('%', #{keyword}, '%')
+                OR id LIKE CONCAT('%', #{keyword}, '%')
+                OR phone_num LIKE CONCAT('%', #{keyword}, '%')
+                OR email LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+
+        ORDER BY member_code
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <!-- 총 개수 -->
+    <select id="countMembers"
+            parameterType="com.hulahoop.redback.common.paging.dto.PageRequestDTO"
+            resultType="long">
+
+        SELECT COUNT(*)
+        FROM T_Member
+
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                name LIKE CONCAT('%', #{keyword}, '%')
+                OR id LIKE CONCAT('%', #{keyword}, '%')
+                OR phone_num LIKE CONCAT('%', #{keyword}, '%')
+                OR email LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        </where>
+    </select>
+
+    <!-- 기존 전체 조회 -->
+    <select id="selectAllMembers"
+            resultType="com.hulahoop.redback.member.model.dto.MemberDTO">
+
+        SELECT
+            member_code AS memberCode,
+            name,
+            id,
+            phone_num AS phoneNum,
+            email,
+            address,
+            user_type AS userType,
+            notification_status AS notificationStatus
+        FROM T_Member
+    </select>
+
+    <!-- 전화번호로 member_code 조회 -->
+    <select id="findMemberCodeByPhone"
+            resultType="string"
+            parameterType="string">
+        SELECT member_code
+        FROM T_Member
+        WHERE phone_num = #{phoneNumber}
+            LIMIT 1
+    </select>
+
+</mapper>

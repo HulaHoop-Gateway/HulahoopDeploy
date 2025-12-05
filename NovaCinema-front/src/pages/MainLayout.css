@@ -1,0 +1,9 @@
+.main-layout {
+  width: 100vw; /* 전체 화면 너비 */
+  min-height: 100vh; /* 전체 화면 높이 */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}

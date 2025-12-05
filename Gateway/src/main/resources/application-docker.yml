@@ -1,0 +1,53 @@
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.server: DEBUG
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      httpserver:
+        wiretap: true
+      httpclient:
+        wiretap: true
+
+      routes:
+        # --------------------------
+        # Movie Service (cinema-back)
+        # --------------------------
+        - id: movie-service
+          uri: http://cinema-back:8082
+          predicates:
+            - Path=/api/gateway/**
+            - Header=intent, .*movie.*
+            - Method=POST
+          filters:
+            - SetPath=/api/movies/dispatch
+
+        # --------------------------
+        # Bike Service (bike-back)
+        # --------------------------
+        - id: bike-service
+          uri: http://bike-back:8081
+          predicates:
+            - Path=/api/gateway/**
+            - Header=intent, .*bike.*
+            - Method=POST
+          filters:
+            - SetPath=/api/bikes/dispatch
+
+        # --------------------------
+        # Internal Seat Update
+        # --------------------------
+        - id: internal-seat-service
+          uri: http://cinema-back:8082
+          predicates:
+            - Path=/internal/seat-updated
+          filters:
+            - SetPath=/internal/seat-updated

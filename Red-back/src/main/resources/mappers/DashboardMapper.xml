@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hulahoop.redback.dashboard.model.dao.DashboardMapper">
+
+    <select id="countTotalMembers" resultType="long">
+        SELECT COUNT(*) FROM T_Member
+    </select>
+
+    <select id="countTotalMerchants" resultType="long">
+        SELECT COUNT(*) FROM T_Merchant
+    </select>
+
+    <select id="countTotalApiRequests" resultType="long">
+        SELECT COALESCE(SUM(CAST(call_count AS UNSIGNED)), 0) FROM T_API
+    </select>
+
+    <select id="countTotalTransactions" resultType="long">
+        SELECT COUNT(*) FROM T_TransactionHistory t
+        WHERE t.status = 'S'
+          AND NOT EXISTS (
+              SELECT 1 FROM T_TransactionHistory cancel
+              WHERE cancel.original_transaction_num = t.transaction_num
+          )
+    </select>
+
+    <select id="selectDailyTransactions" resultType="map">
+        SELECT
+            DATE_FORMAT(t.payment_date, '%m/%d') as date,
+            SUM(t.amount_used) as amount
+        FROM T_TransactionHistory t
+        WHERE t.status = 'S'
+          AND t.payment_date >= CURDATE() - INTERVAL 6 DAY
+          AND NOT EXISTS (
+              SELECT 1 FROM T_TransactionHistory cancel
+              WHERE cancel.original_transaction_num = t.transaction_num
+          )
+        GROUP BY DATE_FORMAT(t.payment_date, '%m/%d')
+        ORDER BY date ASC
+        LIMIT 7
+    </select>
+
+    <select id="selectMonthlyTransactions" resultType="map">
+    <![CDATA[
+        SELECT
+            DATE_FORMAT(t.payment_date, '%m월') as month,
+            SUM(t.amount_used) as amount
+        FROM T_TransactionHistory t
+        WHERE t.status = 'S'
+          AND t.payment_date >= '2025-06-01'
+          AND t.payment_date <= NOW()
+          AND NOT EXISTS (
+              SELECT 1 FROM T_TransactionHistory cancel
+              WHERE cancel.original_transaction_num = t.transaction_num
+          )
+        GROUP BY DATE_FORMAT(t.payment_date, '%m월')
+        ORDER BY month ASC
+            LIMIT 12
+        ]]>
+</select>
+
+
+    <select id="selectCategoryRatio" resultType="map">
+        SELECT
+            c.category_name as name,
+            COUNT(*) as value
+        FROM T_TransactionHistory th
+        JOIN T_Merchant m ON th.merchant_code = m.merchant_code
+        JOIN T_Brand b ON m.brand_code = b.brand_code
+        JOIN T_Category c ON b.category_code = c.category_code
+        WHERE th.status = 'S'
+          AND NOT EXISTS (
+              SELECT 1 FROM T_TransactionHistory cancel
+              WHERE cancel.original_transaction_num = th.transaction_num
+          )
+        GROUP BY c.category_name
+    </select>
+
+</mapper>
