@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "", // Vite proxy를 사용하므로 relative path // ✅ 테스트 서버 주소
+  baseURL: "http://43.201.205.26:8082", // Cinema-back 실제 주소
   headers: {
     "Content-Type": "application/json",
   },

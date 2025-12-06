@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: "", // Vite proxy를 사용하므로 relative path
+    baseURL: "http://43.201.205.26:8081", // Bikeway-back 실제 주소
     headers: {
         "Content-Type": "application/json",
     },

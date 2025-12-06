@@ -1,8 +1,9 @@
+```typescript
 // api/axiosAdmin.ts
 import axios from "axios";
 
 const axiosAdmin = axios.create({
-  baseURL: "", // Next.js rewrites를 사용하므로 relative path
+  baseURL: "http://43.201.205.26:8000", // Red-back 실제 주소
   headers: {
     "Content-Type": "application/json",
   },
@@ -17,7 +18,7 @@ axiosAdmin.interceptors.request.use(
       typeof window !== "undefined" ? localStorage.getItem("admin_jwt") : null;
 
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${ token } `;
     }
 
     return config;
