@@ -15,10 +15,14 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // 모든 API 경로에 적용
-                        .allowedOriginPatterns("http://localhost:3000","http://localhost:5174")
+                        .allowedOriginPatterns(
+                                "http://localhost:3000",
+                                "http://localhost:5174",
+                                "http://43.201.205.26:5174" // EC2 Bike-front
+                )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        //️ 자격 증명(쿠키 등)을 허용하면 이 설정이 필수
+                        // ️ 자격 증명(쿠키 등)을 허용하면 이 설정이 필수
                         .allowCredentials(true);
             }
         };
