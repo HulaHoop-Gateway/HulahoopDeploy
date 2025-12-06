@@ -1,4 +1,3 @@
-```typescript
 // api/axiosAdmin.ts
 import axios from "axios";
 
@@ -18,7 +17,7 @@ axiosAdmin.interceptors.request.use(
       typeof window !== "undefined" ? localStorage.getItem("admin_jwt") : null;
 
     if (token) {
-      config.headers.Authorization = `Bearer ${ token } `;
+      config.headers.Authorization = `Bearer ${token} `;
     }
 
     return config;
