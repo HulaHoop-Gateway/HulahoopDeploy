@@ -2,7 +2,7 @@
 // src/pages/ReservationHistoryPage.jsx
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
-import "../css/ReservationHistoryPage.css";
+import "./ReservationHistoryPage.css";
 
 const ReservationHistoryPage = () => {
   const [histories, setHistories] = useState([]);

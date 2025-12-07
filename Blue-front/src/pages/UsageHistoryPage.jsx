@@ -1,7 +1,7 @@
 // src/pages/UsageHistoryPage.jsx
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
-import "../css/UsageHistoryPage.css";
+import "./UsageHistoryPage.css";
 
 const UsageHistoryPage = () => {
   const [histories, setHistories] = useState([]);

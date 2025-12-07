@@ -2,7 +2,7 @@
 // src/pages/CancellationHistoryPage.jsx
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
-import "../css/UsageHistoryPage.css";
+import "./UsageHistoryPage.css";
 import "./CancellationHistoryPage.css";
 
 const CancellationHistoryPage = () => {
