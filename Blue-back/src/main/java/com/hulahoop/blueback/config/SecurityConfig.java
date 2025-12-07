@@ -77,7 +77,12 @@ public class SecurityConfig {
                 "http://localhost:3001",
                 "http://localhost:5173",
                 "http://43.201.205.26:3000",
-                "http://43.201.205.26:5173"));
+                "http://43.201.205.26:5173",
+                "http://hulahoop.ai.kr",
+                "http://www.hulahoop.ai.kr",
+                "http://admin.hulahoop.ai.kr",
+                "http://cinema.hulahoop.ai.kr",
+                "http://bikeway.hulahoop.ai.kr"));
         configuration.setAllowedMethods(java.util.Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(java.util.Arrays.asList("*"));
         configuration.setAllowCredentials(true);
