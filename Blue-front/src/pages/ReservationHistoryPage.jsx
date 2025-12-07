@@ -1,7 +1,7 @@
 ```javascript
 // src/pages/ReservationHistoryPage.jsx
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../../api/axiosInstance";
+import axiosInstance from "../api/axiosInstance";
 import "../css/ReservationHistoryPage.css";
 
 const ReservationHistoryPage = () => {

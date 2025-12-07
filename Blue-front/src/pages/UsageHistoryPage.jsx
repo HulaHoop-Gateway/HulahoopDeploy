@@ -1,6 +1,6 @@
 // src/pages/UsageHistoryPage.jsx
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../../api/axiosInstance";
+import axiosInstance from "../api/axiosInstance";
 import "../css/UsageHistoryPage.css";
 
 const UsageHistoryPage = () => {
