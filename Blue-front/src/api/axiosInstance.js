@@ -16,7 +16,7 @@ axiosInstance.interceptors.request.use(
   (config) => {
     const token = sessionStorage.getItem("user_jwt");
     if (token) {
-      config.headers.Authorization = `Bearer ${token} `;
+      config.headers.Authorization = `Bearer ${token}`;
       console.log("🔑 [axiosInstance] JWT 토큰 첨부됨");
     }
     return config;
