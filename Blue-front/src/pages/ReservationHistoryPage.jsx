@@ -201,7 +201,9 @@ const ReservationHistoryPage = () => {
                       </span>
                       <span
                         className={`reservation - history__status reservation - history__status--${
-  (item.status || "").toLowerCase()
+  (
+    item.status || ""
+  ).toLowerCase()
 } `}
                       >
                         {formatStatusText(item.status)}
