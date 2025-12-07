@@ -31,8 +31,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                // CORS는 FilterRegistrationBean으로 처리하므로 여기서는 비활성화
-                .cors(cors -> cors.disable())
+                // ✅ CORS 설정 적용 (Security 필터 체인에서 처리)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
@@ -65,6 +65,27 @@ public class SecurityConfig {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    // ✅ CORS 설정 Bean 추가
+    @Bean
+    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+        org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
+
+        configuration.setAllowedOriginPatterns(java.util.Arrays.asList(
+                "http://localhost:3000",
+                "http://localhost:3001",
+                "http://localhost:5173",
+                "http://43.201.205.26:3000",
+                "http://43.201.205.26:5173"));
+        configuration.setAllowedMethods(java.util.Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedHeaders(java.util.Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+        configuration.setExposedHeaders(java.util.Arrays.asList("Authorization", "Set-Cookie"));
+
+        org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
