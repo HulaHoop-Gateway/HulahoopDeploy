@@ -1,5 +1,23 @@
 services:
   # ===========================
+  # Nginx (Reverse Proxy)
+  # ===========================
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - blue-front
+      - red-front
+      - cinema-front
+      - bike-front
+    networks:
+      - app-net
+
+  # ===========================
   # Gateway (API Entry)
   # ===========================
   gateway-back:
