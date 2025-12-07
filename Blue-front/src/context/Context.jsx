@@ -41,7 +41,10 @@ export const ContextProvider = ({ token, setToken, children }) => {
                 headers: { Authorization: `Bearer ${savedToken}` }
             })
                 .then(() => console.log("✅ Backend session reset success"))
-                .catch(err => console.error("❌ Failed to reset backend session (401 ignored):", err));
+                .catch(err => {
+                    // 401은 예상된 동작일 수 있으므로 경고 레벨로 낮춤
+                    console.warn("ℹ️ Backend session reset skipped (Guest or Token Expired):", err.message);
+                });
         }
     }, [token]);
 
