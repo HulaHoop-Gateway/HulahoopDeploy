@@ -7,6 +7,7 @@ services:
     container_name: gateway-back
     ports:
       - "8080:8080"
+    env_file: .env
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - JAVA_TOOL_OPTIONS=-Xmx256m
@@ -19,7 +20,7 @@ services:
       - app-net
 
   # ===========================
-  # Blue (AI Chat)
+  # Blue (AI Chat) - DB: hulahoopdb
   # ===========================
   blue-front:
     build: ./Blue-front
@@ -34,14 +35,26 @@ services:
     container_name: blue-back
     ports:
       - "8090:8090"
+    env_file: .env
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - JAVA_TOOL_OPTIONS=-Xmx256m
+      # DB 설정 (기본값 사용)
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      # 메일 및 API 키
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - KAKAO_API_KEY=${KAKAO_API_KEY}
+      - TOSS_SECRET_KEY=${TOSS_SECRET_KEY}
+      - JWT_SECRET=${JWT_SECRET}
     networks:
       - app-net
 
   # ===========================
-  # Red (Admin Front/Back)
+  # Red (Admin Front/Back) - DB: hulahoopdb
   # ===========================
   red-front:
     build: ./Red-front
@@ -56,14 +69,19 @@ services:
     container_name: red-back
     ports:
       - "8000:8000"
+    env_file: .env
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - JAVA_TOOL_OPTIONS=-Xmx256m
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
     networks:
       - app-net
 
   # ===========================
-  # Cinema (Movie)
+  # Cinema (Movie) - DB: cinemadb
   # ===========================
   cinema-front:
     build: ./NovaCinema-front
@@ -78,14 +96,19 @@ services:
     container_name: cinema-back
     ports:
       - "8082:8082"
+    env_file: .env
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - JAVA_TOOL_OPTIONS=-Xmx256m
+      # URL에서 hulahoopdb를 cinemadb로 교체하여 주입 (중요!)
+      - DB_URL=jdbc:mysql://hulahoopdb.c38um8oygmhz.ap-northeast-2.rds.amazonaws.com:3306/cinemadb?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
     networks:
       - app-net
 
   # ===========================
-  # Bike (Bikeway)
+  # Bike (Bikeway) - DB: bikewaydb
   # ===========================
   bike-front:
     build: ./Bikeway-front
@@ -100,9 +123,14 @@ services:
     container_name: bike-back
     ports:
       - "8081:8081"
+    env_file: .env
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - JAVA_TOOL_OPTIONS=-Xmx256m
+      # URL에서 hulahoopdb를 bikewaydb로 교체하여 주입 (중요!)
+      - DB_URL=jdbc:mysql://hulahoopdb.c38um8oygmhz.ap-northeast-2.rds.amazonaws.com:3306/bikewaydb?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
     networks:
       - app-net
 
