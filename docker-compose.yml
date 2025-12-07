@@ -29,6 +29,8 @@ services:
       - "5173:5173"
     networks:
       - app-net
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=256
 
   blue-back:
     build: ./Blue-back
@@ -63,6 +65,8 @@ services:
       - "3000:3000"
     networks:
       - app-net
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=256
 
   red-back:
     build: ./Red-back
@@ -90,6 +94,8 @@ services:
       - "5175:5175"
     networks:
       - app-net
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=256
 
   cinema-back:
     build: ./NovaCinema-back
@@ -117,6 +123,8 @@ services:
       - "5174:5174"
     networks:
       - app-net
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=256
 
   bike-back:
     build: ./Bikeway-back
