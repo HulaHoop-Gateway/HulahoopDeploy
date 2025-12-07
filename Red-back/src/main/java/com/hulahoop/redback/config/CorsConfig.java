@@ -17,8 +17,12 @@ public class CorsConfig {
                         // ✅ allowedOriginPatterns 사용해야 함 (Spring 6 이상)
                         .allowedOriginPatterns(
                                 "http://localhost:3000",
-                                "http://43.201.205.26:3000" // EC2 Red-front
-                )
+                                "http://43.201.205.26:3000", // EC2 Red-front
+                                "http://hulahoop.ai.kr",
+                                "http://www.hulahoop.ai.kr",
+                                "http://admin.hulahoop.ai.kr",
+                                "http://cinema.hulahoop.ai.kr",
+                                "http://bikeway.hulahoop.ai.kr")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowCredentials(true);
             }

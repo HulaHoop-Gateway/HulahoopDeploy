@@ -18,8 +18,12 @@ public class CorsConfig {
                         .allowedOriginPatterns(
                                 "http://localhost:3000",
                                 "http://localhost:5174",
-                                "http://43.201.205.26:5174" // EC2 Bike-front
-                )
+                                "http://43.201.205.26:5174", // EC2 Bike-front
+                                "http://hulahoop.ai.kr",
+                                "http://www.hulahoop.ai.kr",
+                                "http://admin.hulahoop.ai.kr",
+                                "http://cinema.hulahoop.ai.kr",
+                                "http://bikeway.hulahoop.ai.kr")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         // ️ 자격 증명(쿠키 등)을 허용하면 이 설정이 필수
