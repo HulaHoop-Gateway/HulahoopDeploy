@@ -195,7 +195,9 @@ const CancellationHistoryPage = () => {
                       </span>
                       <span
                         className={`cancellation - history__status cancellation - history__status--${
-  (item.status || "").toLowerCase()
+  (
+    item.status || ""
+  ).toLowerCase()
 } `}
                       >
                         {formatStatusText(item.status)}
