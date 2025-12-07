@@ -72,14 +72,15 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // 프론트 도메인 허용 (로컬 + 도커)
-        config.setAllowedOrigins(Arrays.asList(
+        config.setAllowedOriginPatterns(Arrays.asList(
                 "http://localhost:3000",
-                "http://localhost:3002", // Docker: red-front
-                "http://red-front:3002" // Docker 컨테이너 간 통신
-        ));
+                "http://localhost:3002",
+                "http://43.201.205.26:3000", // ✅ EC2 Public IP 추가
+                "http://red-front:3002"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowCredentials(true);
+        config.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
