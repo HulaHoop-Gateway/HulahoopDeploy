@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import axiosInstance from "../api/axiosInstance";
+import axios from "axios"; // ✅ axios 직접 import
 import { loadPaymentWidget } from "@tosspayments/payment-widget-sdk"; // Toss Payments SDK import
 
 export const Context = createContext();
@@ -35,14 +36,12 @@ export const ContextProvider = ({ token, setToken, children }) => {
         // 새로고침 시 백엔드 세션도 초기화 (플로우 탈출)
         const savedToken = sessionStorage.getItem("user_jwt");
         if (savedToken) {
-            // axiosInstance 대신 직접 호출하여 인터셉터 문제 배제
-            import("axios").then(axios => {
-                axiosInstance.post("/api/ai/reset", {}, {
-                    headers: { Authorization: `Bearer ${savedToken}` }
-                })
-                    .then(() => console.log("✅ Backend session reset success"))
-                    .catch(err => console.error("❌ Failed to reset backend session:", err));
-            });
+            // ✅ axiosInstance 대신 순수 axios 사용 (인터셉터 우회하여 401 에러 무시)
+            axios.post("http://43.201.205.26:8090/api/ai/reset", {}, {
+                headers: { Authorization: `Bearer ${savedToken}` }
+            })
+                .then(() => console.log("✅ Backend session reset success"))
+                .catch(err => console.error("❌ Failed to reset backend session (401 ignored):", err));
         }
     }, [token]);
 
