@@ -1,4 +1,3 @@
-```javascript
 // src/pages/CancellationHistoryPage.jsx
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
@@ -30,7 +29,7 @@ const CancellationHistoryPage = () => {
 
         // 2) 취소/환불 내역 가져오기 (status=R)
         const response = await axiosInstance.get(
-          `/ api / history / ${ memberCode } `,
+          `/api/history/${memberCode}`,
           {
             params: { status: "R" }, // 취소/환불 내역만
           }
@@ -55,12 +54,12 @@ const CancellationHistoryPage = () => {
 
   const formatAmount = (amount) => {
     if (amount == null) return "";
-    return `${ Number(amount).toLocaleString() } 원`;
+    return `${Number(amount).toLocaleString()}원`;
   };
 
   const formatTransactionNum = (num) => {
     if (num == null) return "";
-    return `#${ String(num).padStart(4, "0") } `;
+    return `#${String(num).padStart(4, "0")}`;
   };
 
   const formatPeriod = (startDate, endDate) => {
@@ -68,7 +67,7 @@ const CancellationHistoryPage = () => {
     const end = formatDate(endDate);
     if (!start && !end) return "";
     if (start === end) return start;
-    return `${ start } ~${ end } `;
+    return `${start} ~ ${end}`;
   };
 
   const formatStatusText = (status) => {
@@ -194,11 +193,9 @@ const CancellationHistoryPage = () => {
                         {formatAmount(item.amountUsed)}
                       </span>
                       <span
-                        className={`cancellation - history__status cancellation - history__status--${
-  (
-    item.status || ""
-  ).toLowerCase()
-} `}
+                        className={`cancellation-history__status cancellation-history__status--${(
+                          item.status || ""
+                        ).toLowerCase()}`}
                       >
                         {formatStatusText(item.status)}
                       </span>
