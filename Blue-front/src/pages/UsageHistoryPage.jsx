@@ -17,6 +17,18 @@ const UsageHistoryPage = () => {
         setLoading(true);
         setError(null);
 
+        // 1. 회원 정보 조회 (User ID 가져오기)
+        const memberResponse = await axiosInstance.get("/api/member/info");
+        const { memberCode, name } = memberResponse.data;
+
+        setMemberCode(memberCode);
+        setMemberName(name);
+
+        if (!memberCode) {
+          throw new Error("사용자 정보를 찾을 수 없습니다.");
+        }
+
+        // 2. 이용 내역 조회 (status=S)
         const historyRes = await axiosInstance.get(
           `/api/history/${memberCode}`,
           {
@@ -101,7 +113,7 @@ const UsageHistoryPage = () => {
           <div className="summary-card">
             <span className="summary-card__label">총 이용</span>
             <strong className="summary-card__value">
-              {histories.length}건
+              {completedCount}건
             </strong>
           </div>
           <div className="summary-card">
