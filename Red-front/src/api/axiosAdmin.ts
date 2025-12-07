@@ -11,13 +11,16 @@ const axiosAdmin = axios.create({
 // ----------------------
 // 요청 인터셉터
 // ----------------------
+// ----------------------
+// 요청 인터셉터
+// ----------------------
 axiosAdmin.interceptors.request.use(
   (config) => {
     const token =
       typeof window !== "undefined" ? localStorage.getItem("admin_jwt") : null;
 
     if (token) {
-      config.headers.Authorization = `Bearer ${token} `;
+      config.headers.Authorization = `Bearer ${token}`; // 공백 제거
     }
 
     return config;
@@ -34,7 +37,8 @@ axiosAdmin.interceptors.response.use(
     if (error.response?.status === 401) {
       if (typeof window !== "undefined") {
         localStorage.removeItem("admin_jwt");
-        window.location.href = "/admin/login";
+        localStorage.removeItem("admin_name"); // 이름도 삭제
+        window.location.href = "/"; // 로그인 페이지가 루트('/')임
       }
     }
     return Promise.reject(error);

@@ -1,3 +1,5 @@
+import axiosAdmin from "@/api/axiosAdmin";
+
 export interface DashboardData {
     totalMembers: number;
     totalMerchants: number;
@@ -9,15 +11,8 @@ export interface DashboardData {
 }
 
 export const fetchDashboardData = async (): Promise<DashboardData> => {
-    // Assuming the backend is running on localhost:8080 and proxy is set up or CORS is allowed
-    // If you have a specific base URL, replace 'http://localhost:8080'
-    const response = await fetch('http://localhost:8000/api/v1/dashboard', {
-        cache: 'no-store', // Ensure fresh data
-    });
-
-    if (!response.ok) {
-        throw new Error('Failed to fetch dashboard data');
-    }
-
-    return response.json();
+    // axiosAdmin을 사용하여 baseURL, interceptors(토큰) 자동 적용
+    // Red-back Controller: @RequestMapping("/api/v1/dashboard")
+    const response = await axiosAdmin.get("/api/v1/dashboard");
+    return response.data;
 };
