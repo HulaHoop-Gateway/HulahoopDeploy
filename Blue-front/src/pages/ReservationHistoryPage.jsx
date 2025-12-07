@@ -1,8 +1,8 @@
+```javascript
 // src/pages/ReservationHistoryPage.jsx
-import React, { useState, useEffect } from 'react';
-import axios from "axios";
-import axiosInstance from '../api/axiosInstance';
-import './ReservationHistoryPage.css';
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../../api/axiosInstance";
+import "../css/ReservationHistoryPage.css";
 
 const ReservationHistoryPage = () => {
   const [histories, setHistories] = useState([]);
@@ -14,26 +14,19 @@ const ReservationHistoryPage = () => {
   const fetchReservationHistory = async () => {
     try {
       setLoading(true);
-      const token = sessionStorage.getItem("user_jwt");
-      if (!token) {
-        throw new Error("로그인이 필요합니다.");
-      }
+      setError(null);
 
-      const memberInfoResponse = await axios.get(
-        "http://localhost:8090/api/member/info",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      // 1. 회원 정보 조회
+      const memberResponse = await axiosInstance.get("/api/member/info");
 
-      const { memberCode, name } = memberInfoResponse.data;
+      const { memberCode, name } = memberResponse.data;
       setMemberName(name);
 
       if (!memberCode) {
         throw new Error("사용자 정보를 찾을 수 없습니다.");
       }
 
-      const response = await axiosInstance.get(`/api/history/${memberCode}`, {
+      const response = await axiosInstance.get(`/ api / history / ${ memberCode } `, {
         params: { status: "P" }, // 예약 내역만
       });
       setHistories(response.data || []);
@@ -68,7 +61,7 @@ const ReservationHistoryPage = () => {
       } catch (err) {
         console.error("Failed to cancel reservation:", err);
         console.error("Error response:", err.response?.data); // 🔍 백엔드 에러 메시지 확인
-        alert(`예약 취소 중 오류가 발생했습니다: ${err.response?.data?.message || err.message}`);
+        alert(`예약 취소 중 오류가 발생했습니다: ${ err.response?.data?.message || err.message } `);
       }
     }
   };
@@ -80,12 +73,12 @@ const ReservationHistoryPage = () => {
 
   const formatAmount = (amount) => {
     if (amount == null) return "0";
-    return `${Number(amount).toLocaleString()}원`;
+    return `${ Number(amount).toLocaleString() } 원`;
   };
 
   const formatTransactionNum = (num) => {
     if (num == null) return "";
-    return `#${String(num).padStart(4, "0")}`;
+    return `#${ String(num).padStart(4, "0") } `;
   };
 
   const formatPeriod = (startDate, endDate) => {
@@ -93,7 +86,7 @@ const ReservationHistoryPage = () => {
     const end = formatDate(endDate);
     if (!start && !end) return "";
     if (start === end) return start;
-    return `${start} ~ ${end}`;
+    return `${ start } ~${ end } `;
   };
 
   const formatStatusText = (status) => {
@@ -207,8 +200,9 @@ const ReservationHistoryPage = () => {
                         {formatAmount(item.amountUsed)}
                       </span>
                       <span
-                        className={`reservation-history__status reservation-history__status--${(item.status || "").toLowerCase()
-                          }`}
+                        className={`reservation - history__status reservation - history__status--${
+  (item.status || "").toLowerCase()
+} `}
                       >
                         {formatStatusText(item.status)}
                       </span>

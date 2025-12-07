@@ -37,7 +37,7 @@ export const ContextProvider = ({ token, setToken, children }) => {
         if (savedToken) {
             // axiosInstance 대신 직접 호출하여 인터셉터 문제 배제
             import("axios").then(axios => {
-                axios.default.post("http://localhost:8090/api/ai/reset", {}, {
+                axiosInstance.post("/api/ai/reset", {}, {
                     headers: { Authorization: `Bearer ${savedToken}` }
                 })
                     .then(() => console.log("✅ Backend session reset success"))

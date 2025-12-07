@@ -1,7 +1,8 @@
+```javascript
 // src/pages/CancellationHistoryPage.jsx
-import React, { useState, useEffect } from "react";
-import axios from "axios";                 // 👈 추가: member/info용
-import axiosInstance from "../api/axiosInstance";
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../../api/axiosInstance";
+import "../css/UsageHistoryPage.css";
 import "./CancellationHistoryPage.css";
 
 const CancellationHistoryPage = () => {
@@ -19,29 +20,17 @@ const CancellationHistoryPage = () => {
         setLoading(true);
         setError("");
 
-        // 1) 토큰 가져오기
-        const token = sessionStorage.getItem("user_jwt");
-        if (!token) {
-          setError("로그인이 필요합니다.");
-          setLoading(false);
-          return;
-        }
+        // 1. 회원 정보 조회 (User ID 가져오기)
+        // axiosInstance는 baseURL과 interceptor(토큰)가 설정되어 있음
+        const memberResponse = await axiosInstance.get("/api/member/info");
 
-        // 2) 회원 정보 가져오기
-        const memberRes = await axios.get(
-          "http://localhost:8090/api/member/info",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        const { memberCode, name } = memberRes.data;
+        const { memberCode, name } = memberResponse.data;
         setMemberCode(memberCode);
         setMemberName(name);
 
-        // 3) 취소/환불 내역 가져오기 (status=R)
+        // 2) 취소/환불 내역 가져오기 (status=R)
         const response = await axiosInstance.get(
-          `/api/history/${memberCode}`,
+          `/ api / history / ${ memberCode } `,
           {
             params: { status: "R" }, // 취소/환불 내역만
           }
@@ -66,12 +55,12 @@ const CancellationHistoryPage = () => {
 
   const formatAmount = (amount) => {
     if (amount == null) return "";
-    return `${Number(amount).toLocaleString()}원`;
+    return `${ Number(amount).toLocaleString() } 원`;
   };
 
   const formatTransactionNum = (num) => {
     if (num == null) return "";
-    return `#${String(num).padStart(4, "0")}`;
+    return `#${ String(num).padStart(4, "0") } `;
   };
 
   const formatPeriod = (startDate, endDate) => {
@@ -79,7 +68,7 @@ const CancellationHistoryPage = () => {
     const end = formatDate(endDate);
     if (!start && !end) return "";
     if (start === end) return start;
-    return `${start} ~ ${end}`;
+    return `${ start } ~${ end } `;
   };
 
   const formatStatusText = (status) => {
@@ -205,8 +194,9 @@ const CancellationHistoryPage = () => {
                         {formatAmount(item.amountUsed)}
                       </span>
                       <span
-                        className={`cancellation-history__status cancellation-history__status--${(item.status || "").toLowerCase()
-                          }`}
+                        className={`cancellation - history__status cancellation - history__status--${
+  (item.status || "").toLowerCase()
+} `}
                       >
                         {formatStatusText(item.status)}
                       </span>

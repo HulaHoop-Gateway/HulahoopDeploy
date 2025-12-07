@@ -1,8 +1,7 @@
 // src/pages/UsageHistoryPage.jsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import axiosInstance from "../api/axiosInstance";
-import "./UsageHistoryPage.css";
+import axiosInstance from "../../api/axiosInstance";
+import "../css/UsageHistoryPage.css";
 
 const UsageHistoryPage = () => {
   const [histories, setHistories] = useState([]);
@@ -16,24 +15,7 @@ const UsageHistoryPage = () => {
     const fetchMemberAndHistory = async () => {
       try {
         setLoading(true);
-        setError("");
-
-        const token = sessionStorage.getItem("user_jwt");
-        if (!token) {
-          setError("로그인이 필요합니다.");
-          return;
-        }
-
-        const memberRes = await axios.get(
-          "http://localhost:8090/api/member/info",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        const { memberCode, name } = memberRes.data;
-        setMemberCode(memberCode);
-        setMemberName(name);
+        setError(null);
 
         const historyRes = await axiosInstance.get(
           `/api/history/${memberCode}`,
