@@ -129,7 +129,7 @@ public class BikeFlowHandler {
             // 표시용 분당 요금 (정수 나누기 결과)
             int ratePerMinuteDisplay = ratePerHour / 60;
 
-            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime now = LocalDateTime.now(java.time.ZoneId.of("Asia/Seoul"));
             LocalDateTime limit = now.plusHours(2);
             DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
 
