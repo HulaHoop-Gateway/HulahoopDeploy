@@ -23,7 +23,13 @@ public class CorsConfig {
                                 "http://www.hulahoop.ai.kr",
                                 "http://admin.hulahoop.ai.kr",
                                 "http://cinema.hulahoop.ai.kr",
-                                "http://bikeway.hulahoop.ai.kr")
+                                "http://bikeway.hulahoop.ai.kr",
+                                // HTTPS 도메인 추가
+                                "https://hulahoop.ai.kr",
+                                "https://www.hulahoop.ai.kr",
+                                "https://admin.hulahoop.ai.kr",
+                                "https://cinema.hulahoop.ai.kr",
+                                "https://bikeway.hulahoop.ai.kr")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         // ️ 자격 증명(쿠키 등)을 허용하면 이 설정이 필수
