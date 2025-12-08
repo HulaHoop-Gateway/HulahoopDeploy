@@ -56,7 +56,8 @@ const InlinePaymentButton = ({ amount, phoneNumber, orderName = "자전거 대�
         setHistory(prev => [...prev, { type: "user", text: "결제하기" }]);
 
         try {
-            const orderId = crypto.randomUUID();
+            // ✅ crypto.randomUUID() 대체 (HTTP 환경 호환)
+            const orderId = "order_" + Math.random().toString(36).slice(2) + Date.now();
 
             const result = await widgetRef.current.requestPayment({
                 orderId,

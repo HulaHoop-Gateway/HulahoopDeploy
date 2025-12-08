@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://43.201.205.26:8090", // Blue-back 실제 주소
+  baseURL: "", // ✅ Vite Proxy 사용 (http://blue-back:8090으로 전달됨)
   headers: {
     "Content-Type": "application/json",
   },

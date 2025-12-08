@@ -37,7 +37,7 @@ export const ContextProvider = ({ token, setToken, children }) => {
         const savedToken = sessionStorage.getItem("user_jwt");
         if (savedToken) {
             // ✅ axiosInstance 대신 순수 axios 사용 (인터셉터 우회하여 401 에러 무시)
-            axios.post("http://43.201.205.26:8090/api/ai/reset", {}, {
+            axios.post("/api/ai/reset", {}, {
                 headers: { Authorization: `Bearer ${savedToken}` }
             })
                 .then(() => console.log("✅ Backend session reset success"))
@@ -70,7 +70,8 @@ export const ContextProvider = ({ token, setToken, children }) => {
                 phoneNumber || "GUEST"
             );
 
-            const orderId = crypto.randomUUID();
+            // ✅ crypto.randomUUID() 대체 (HTTP 환경 호환)
+            const orderId = "order_" + Math.random().toString(36).slice(2) + Date.now();
 
             const result = await widget.requestPayment({
                 orderId,
