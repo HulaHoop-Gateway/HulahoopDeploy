@@ -11,7 +11,7 @@ function Login({ setIsLoggedIn }) {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:8082/auth/login', {
+      const response = await axios.post('/auth/login', {
         id: userId,
         password: password,
       });

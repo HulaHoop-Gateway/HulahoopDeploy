@@ -13,6 +13,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/auth': {
+        target: 'http://cinema-back:8082',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 });
