@@ -83,18 +83,25 @@ export default function StatusPage() {
         const start = performance.now();
 
         try {
-          const res = await fetch(healthUrl);
-          const ms = Math.round(performance.now() - start);
+          // 서버 사이드 프록시를 통해 헬스 체크 요청
+          try {
+            const res = await fetch("/api/health-check", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ url: healthUrl }),
+            });
+            const data = await res.json();
+            const ms = Math.round(performance.now() - start);
 
-          return {
-            ...srv,
-            status: (res.ok ? "UP" : "DOWN") as "UP" | "DOWN",
-            responseTime: ms,
-          };
-        } catch {
-          return { ...srv, status: "DOWN" as const, responseTime: undefined };
-        }
-      })
+            return {
+              ...srv,
+              status: data.status === "UP" ? "UP" : "DOWN",
+              responseTime: data.status === "UP" ? ms : undefined,
+            };
+          } catch {
+            return { ...srv, status: "DOWN" as const, responseTime: undefined };
+          }
+        })
     );
 
     setServers(updated);
