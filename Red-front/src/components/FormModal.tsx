@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import axiosAdmin from "@/api/axiosAdmin";
 
 // LAZY LOADING을 사용하여 폼 컴포넌트를 동적으로 임포트합니다.
 const TeacherForm = dynamic(() => import("./form/TeacherForm"), {
@@ -60,27 +61,17 @@ const FormModal = ({
     if (!id) return;
 
     try {
-      // 테이블 타입에 따라 API 엔드포인트 결정
-      let url = `http://localhost:8000/api/${table}s/${id}`;
+      // ✅ axiosAdmin 사용 (상대 경로)
+      const url = `/api/${table}s/${id}`;
 
-      // merchant의 경우 id가 merchantCode이므로 그대로 사용
-      // 다른 테이블의 경우 id 처리 방식이 다를 수 있음 (필요 시 분기 처리)
+      await axiosAdmin.delete(url);
 
-      const res = await fetch(url, {
-        method: "DELETE",
-      });
-
-      if (!res.ok) {
-        // 백엔드에서 반환한 에러 메시지 추출
-        const errorMessage = await res.text();
-        throw new Error(errorMessage || "삭제에 실패했습니다.");
-      }
       // 성공 시 페이지 새로고침
       window.location.reload();
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      // 백엔드의 구체적인 에러 메시지 표시
-      alert(error instanceof Error ? error.message : "삭제 작업에 실패했습니다.");
+      const errorMessage = error.response?.data || error.message || "삭제에 실패했습니다.";
+      alert(errorMessage);
     }
   };
 

@@ -9,6 +9,7 @@ import Image from "next/image";
 import { FaFilm, FaBicycle } from "react-icons/fa";
 import Link from "next/link";
 import { useEffect, useState, useMemo } from "react";
+import axiosAdmin from "@/api/axiosAdmin";
 
 interface Merchant {
   id: string;
@@ -45,13 +46,12 @@ const MerchantListPage = () => {
   const fetchMerchants = async (pageNum: number = page) => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `http://localhost:8000/api/merchants?page=${pageNum}&size=${size}`
-      );
+      // ✅ axiosAdmin 사용 (Proxy + Auth Header 자동 적용)
+      const res = await axiosAdmin.get(`/api/merchants`, {
+        params: { page: pageNum, size },
+      });
 
-      if (!res.ok) throw new Error("데이터 조회 실패");
-
-      const json = await res.json();
+      const json = res.data; // axios는 .data에 응답 본문이 있음
 
       const list = json.content.map((m: any) => ({
         ...m,
@@ -128,7 +128,7 @@ const MerchantListPage = () => {
 
       <td>
         <div className="flex items-center gap-2">
-          
+
           {role === "admin" && <FormModal table="merchant" type="update" data={item} />}
 
           {role === "admin" && (

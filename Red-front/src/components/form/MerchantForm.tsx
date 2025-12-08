@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import axiosAdmin from "@/api/axiosAdmin";
 
 // 가맹점 데이터 유효성 검사를 위한 Zod 스키마
 const schema = z.object({
@@ -47,30 +48,23 @@ const MerchantForm = ({
     try {
       const url =
         type === "update"
-          ? `http://localhost:8000/api/merchants/${data.merchantCode}`
-          : "http://localhost:8000/api/merchants";
-      const method = type === "update" ? "PUT" : "POST";
+          ? `/api/merchants/${data.merchantCode}`
+          : "/api/merchants";
+      const method = type === "update" ? "put" : "post";
 
-      const res = await fetch(url, {
+      // ✅ axiosAdmin 사용
+      await axiosAdmin({
         method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+        url,
+        data: formData,
       });
-
-      if (!res.ok) {
-        // 백엔드에서 반환한 에러 메시지 추출
-        const errorMessage = await res.text();
-        throw new Error(errorMessage || `${type === "update" ? "수정" : "생성"}에 실패했습니다.`);
-      }
 
       // 성공 시 페이지 새로고침으로 목록 갱신
       window.location.reload();
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      // 백엔드의 구체적인 에러 메시지 표시
-      alert(error instanceof Error ? error.message : "작업에 실패했습니다.");
+      const errorMessage = error.response?.data || error.message || "작업에 실패했습니다.";
+      alert(errorMessage);
     }
   };
 

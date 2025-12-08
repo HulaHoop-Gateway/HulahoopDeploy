@@ -115,7 +115,7 @@ export default function StatusPage() {
 
     updateServerStatuses();
 
-    const intervalId = setInterval(updateServerStatuses, 10000);
+    const intervalId = setInterval(updateServerStatuses, 1000);
     return () => clearInterval(intervalId);
   }, [servers.length]);
 

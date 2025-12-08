@@ -4,6 +4,7 @@ import FormModal from "@/components/FormModal";
 import { role } from "@/lib/data";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import axiosAdmin from "@/api/axiosAdmin";
 
 // 가맹점 데이터 타입을 정의합니다.
 interface Merchant {
@@ -25,16 +26,12 @@ const SingleMerchantPage = ({ params }: { params: { id: string } }) => {
   useEffect(() => {
     const fetchMerchant = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:8000/api/merchants/${params.id}`
-        );
-        if (!res.ok) {
-          throw new Error("가맹점 정보를 불러오는 데 실패했습니다.");
-        }
-        const data = await res.json();
+        // ✅ axiosAdmin 사용
+        const res = await axiosAdmin.get(`/api/merchants/${params.id}`);
+        const data = res.data;
         setMerchant({ ...data, id: data.merchantCode }); // id를 merchantCode로 설정
       } catch (err: any) {
-        setError(err.message);
+        setError(err.message || "가맹점 정보를 불러오는 데 실패했습니다.");
       } finally {
         setLoading(false);
       }
@@ -104,11 +101,10 @@ const SingleMerchantPage = ({ params }: { params: { id: string } }) => {
             <div className="flex flex-col">
               <span className="text-gray-500 font-semibold">계약 상태</span>
               <span
-                className={`w-fit px-3 py-1 rounded-full text-xs font-semibold ${
-                  merchant.contractStatus === "Y"
+                className={`w-fit px-3 py-1 rounded-full text-xs font-semibold ${merchant.contractStatus === "Y"
                     ? "bg-green-100 text-green-700"
                     : "bg-red-100 text-red-700"
-                }`}
+                  }`}
               >
                 {merchant.contractStatus === "Y" ? "Active" : "Terminated"}
               </span>
