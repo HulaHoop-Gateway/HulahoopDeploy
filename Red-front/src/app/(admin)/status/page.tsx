@@ -94,7 +94,7 @@ export default function StatusPage() {
 
           return {
             ...srv,
-            status: data.status === "UP" ? "UP" : "DOWN",
+            status: (data.status === "UP" ? "UP" : "DOWN") as "UP" | "DOWN",
             responseTime: data.status === "UP" ? ms : undefined,
           };
         } catch {
