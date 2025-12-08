@@ -2,7 +2,8 @@
 import axios from "axios";
 
 const axiosAdmin = axios.create({
-  baseURL: "http://43.201.205.26:8000", // Red-back 실제 주소
+  // baseURL: "http://43.201.205.26:8000", // ❌ 직접 접속 금지 (방화벽 문제)
+  baseURL: "", // ✅ Next.js Rewrite("/api/...")를 타도록 설정
   headers: {
     "Content-Type": "application/json",
   },
