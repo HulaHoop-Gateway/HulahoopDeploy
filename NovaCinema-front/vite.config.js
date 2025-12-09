@@ -18,6 +18,21 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/reservation': {
+        target: 'http://cinema-back:8082',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/info': {
+        target: 'http://cinema-back:8082',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/seat': {
+        target: 'http://cinema-back:8082',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 });
