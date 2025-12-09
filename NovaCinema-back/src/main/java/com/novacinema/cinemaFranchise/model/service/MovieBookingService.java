@@ -219,7 +219,7 @@ public class MovieBookingService {
         try {
             RestTemplate restTemplate = new RestTemplate();
 
-            String url = "http://localhost:8000/api/transactions/add";
+            String url = "http://red-back:8000/api/transactions/add";
 
             // ⭐ scheduleNum → merchant_code 조회
             String merchantCode = scheduleMapper.findMerchantCodeByScheduleNum(scheduleNum);

@@ -86,7 +86,8 @@ public class BikeService {
 
             // 날짜 포맷 변환 (String "HH:mm" -> LocalDateTime ISO String)
             // startTime, endTime은 "HH:mm" 형식이므로 날짜(오늘)를 붙여야 함
-            String today = java.time.LocalDate.now().toString();
+            // ✅ Asia/Seoul 시간대 명시 (UTC 변환 방지)
+            String today = java.time.LocalDate.now(java.time.ZoneId.of("Asia/Seoul")).toString();
             String startDateTime = today + " " + startTime + ":00"; // yyyy-MM-dd HH:mm:ss
             String endDateTime = today + " " + endTime + ":00"; // yyyy-MM-dd HH:mm:ss
 

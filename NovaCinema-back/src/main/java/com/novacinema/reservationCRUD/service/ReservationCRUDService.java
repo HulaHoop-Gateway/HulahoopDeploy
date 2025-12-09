@@ -79,7 +79,8 @@ public class ReservationCRUDService {
      * 오늘 날짜 기준 고유 예매 ID 생성 (형식: yyMMdd0001)
      */
     private String generateReservationId() {
-        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyMMdd")); // 예: 251106
+        String today = LocalDate.now(java.time.ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("yyMMdd")); // 예:
+                                                                                                                       // 251106
         String prefix = today;
 
         String maxId = reservationMapper.findMaxReservationIdForToday(prefix + "%");

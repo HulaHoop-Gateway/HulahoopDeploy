@@ -154,6 +154,44 @@ public class BikeFlowHandler {
             String start = parts[0].trim().replaceAll("[^0-9:]", "");
             String end = parts[1].trim().replaceAll("[^0-9:]", "");
 
+            // ✅ 시간 유효성 검증 추가
+            LocalDateTime now = LocalDateTime.now(java.time.ZoneId.of("Asia/Seoul"));
+            LocalDateTime limit = now.plusHours(2);
+
+            try {
+                LocalTime startLocalTime = LocalTime.parse(start, DateTimeFormatter.ofPattern("HH:mm"));
+                LocalTime endLocalTime = LocalTime.parse(end, DateTimeFormatter.ofPattern("HH:mm"));
+
+                // 현재 시간과 비교 (오늘 날짜 기준)
+                LocalDateTime startDateTime = LocalDateTime.of(now.toLocalDate(), startLocalTime);
+                LocalDateTime endDateTime = LocalDateTime.of(now.toLocalDate(), endLocalTime);
+
+                // 시작 시간이 현재 시간보다 이전인지 체크
+                if (startDateTime.isBefore(now)) {
+                    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
+                    return "⚠️ 시작 시간이 현재 시간보다 이전입니다.\\n\\n" +
+                            "예약 가능 시간: " + now.format(fmt) + " ~ " + limit.format(fmt) + "\\n" +
+                            "다시 입력해주세요. 예) 18:30 ~ 19:00";
+                }
+
+                // 종료 시간이 제한 시간을 초과하는지 체크
+                if (endDateTime.isAfter(limit)) {
+                    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
+                    return "⚠️ 종료 시간이 예약 가능 시간을 초과합니다.\\n\\n" +
+                            "예약 가능 시간: " + now.format(fmt) + " ~ " + limit.format(fmt) + "\\n" +
+                            "다시 입력해주세요. 예) 18:30 ~ 19:00";
+                }
+
+                // 시작 시간이 종료 시간보다 이후인지 체크
+                if (startDateTime.isAfter(endDateTime) || startDateTime.isEqual(endDateTime)) {
+                    return "⚠️ 시작 시간이 종료 시간보다 늦거나 같습니다.\\n\\n" +
+                            "올바른 시간을 입력해주세요. 예) 18:30 ~ 19:00";
+                }
+
+            } catch (Exception e) {
+                return "⚠️ 시간 형식이 올바르지 않습니다. 예) 18:30 ~ 19:00";
+            }
+
             session.getBookingContext().put("startTime", start);
             session.getBookingContext().put("endTime", end);
 
