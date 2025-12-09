@@ -8,7 +8,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ReservationExpiryScheduler {
@@ -51,10 +55,15 @@ public class ReservationExpiryScheduler {
                     if (updated > 0) {
                         // 자전거 상태 복구: Reserved → Available
                         bicycleMapper.updateBicycleStatus(reservation.getBicycleCode(), "Available");
+
+                        // ✅ Admin 서버 상태 업데이트 (P → S)
+                        updateAdminTransactionStatus(reservation.getTransactionNum());
+
                         successCount++;
 
-                        log.info("✔️ 예약 #{} 만료 처리 완료 (자전거: {})",
-                                reservation.getRecordNum(), reservation.getBicycleCode());
+                        log.info("✔️ 예약 #{} 만료 처리 완료 (자전거: {}, 트랜잭션: {})",
+                                reservation.getRecordNum(), reservation.getBicycleCode(),
+                                reservation.getTransactionNum());
                     }
                 } catch (Exception e) {
                     log.error("❌ 예약 #{} 처리 실패: {}", reservation.getRecordNum(), e.getMessage());
@@ -65,6 +74,30 @@ public class ReservationExpiryScheduler {
 
         } catch (Exception e) {
             log.error("❌ 만료 예약 처리 중 오류 발생: {}", e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Admin 서버에 트랜잭션 상태 업데이트 (P → S)
+     */
+    private void updateAdminTransactionStatus(Long transactionNum) {
+        if (transactionNum == null) {
+            return;
+        }
+
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "http://red-back:8000/api/transactions/update-status";
+
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("transactionNum", transactionNum);
+            payload.put("status", "S"); // Success/Complete
+
+            restTemplate.postForObject(url, payload, String.class);
+            log.info("✅ Admin 서버 상태 업데이트 성공: transactionNum={}", transactionNum);
+        } catch (Exception e) {
+            log.error("❌ Admin 서버 상태 업데이트 실패: transactionNum={}, error={}",
+                    transactionNum, e.getMessage());
         }
     }
 }
