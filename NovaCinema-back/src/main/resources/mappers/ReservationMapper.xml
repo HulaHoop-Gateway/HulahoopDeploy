@@ -322,6 +322,7 @@
         JOIN T_CinemaFranchise cf ON th.branch_num = cf.branch_num
 
         WHERE r.transaction_num = #{transactionNum}
+        LIMIT 1
     </select>
 
     <!-- 🔄 트랜잭션 번호 업데이트 (⭐ 추가) -->

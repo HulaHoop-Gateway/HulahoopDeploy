@@ -92,15 +92,19 @@ public class MovieBookingService {
                         schedules = scheduleMapper.findSchedulesByBranchNumAndDate(branchNum, date);
                     }
 
-                    List<Map<String, Object>> scheduleMaps = schedules.stream().map(s -> {
-                        Map<String, Object> m = new HashMap<>();
-                        m.put("scheduleNum", s.getScheduleNum());
-                        m.put("screeningDate", s.getScreeningDate());
-                        m.put("screeningNumber", s.getTheaterInfo().getScreeningNumber());
-                        m.put("branchName", s.getTheaterInfo().getCinemaFranchisedto().getBranchName());
-                        m.put("movieTitle", s.getMovieInfo().getMovieTitle());
-                        return m;
-                    }).toList();
+                    // ✅ 현재 시간 이후 상영만 필터링
+                    LocalDateTime now = LocalDateTime.now(java.time.ZoneId.of("Asia/Seoul"));
+                    List<Map<String, Object>> scheduleMaps = schedules.stream()
+                            .filter(s -> s.getScreeningDate() != null && s.getScreeningDate().isAfter(now))
+                            .map(s -> {
+                                Map<String, Object> m = new HashMap<>();
+                                m.put("scheduleNum", s.getScheduleNum());
+                                m.put("screeningDate", s.getScreeningDate());
+                                m.put("screeningNumber", s.getTheaterInfo().getScreeningNumber());
+                                m.put("branchName", s.getTheaterInfo().getCinemaFranchisedto().getBranchName());
+                                m.put("movieTitle", s.getMovieInfo().getMovieTitle());
+                                return m;
+                            }).toList();
 
                     result.put("movies", scheduleMaps);
                     break;

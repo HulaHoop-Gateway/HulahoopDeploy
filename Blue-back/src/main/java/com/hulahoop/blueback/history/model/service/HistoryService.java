@@ -86,10 +86,28 @@ public class HistoryService {
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(cancelRequest, headers);
 
-            restTemplate.postForEntity(gatewayUrl, entity, String.class);
+            // 응답 받아서 실제 성공 여부 확인
+            org.springframework.http.ResponseEntity<Map> response = restTemplate.postForEntity(
+                    gatewayUrl, entity, Map.class);
 
-            result.put("success", true);
-            result.put("message", "예약이 성공적으로 취소되었습니다.");
+            Map<String, Object> responseBody = response.getBody();
+            System.out.println("[HistoryService] Gateway 응답: " + responseBody);
+
+            // Cinema/Bike-back의 실제 응답 확인
+            if (responseBody != null && responseBody.containsKey("message")) {
+                String message = String.valueOf(responseBody.get("message"));
+                // 성공 메시지 확인
+                if (message.contains("취소되었습니다") || message.contains("취소")) {
+                    result.put("success", true);
+                    result.put("message", message);
+                } else {
+                    result.put("success", false);
+                    result.put("message", message);
+                }
+            } else {
+                result.put("success", true);
+                result.put("message", "예약이 성공적으로 취소되었습니다.");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             result.put("success", false);
