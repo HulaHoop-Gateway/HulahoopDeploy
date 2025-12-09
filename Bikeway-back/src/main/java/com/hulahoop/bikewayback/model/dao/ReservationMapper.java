@@ -16,5 +16,7 @@ public interface ReservationMapper {
 
     int updateReservationState(@Param("recordNum") int recordNum, @Param("state") String state);
 
-    List<ReservationDTO> findExpiredReservations();
+    // 만료된 예약 조회 (현재 날짜 + 현재 시간 기준)
+    List<ReservationDTO> findExpiredReservations(@Param("currentDate") String currentDate,
+            @Param("currentTime") String currentTime);
 }

@@ -96,11 +96,13 @@
             r.rate_per_hour,
             r.duration_hours,
             r.total_amount,
-            m.phone_number
+            m.phone_number,
+            r.transaction_num
         FROM T_ReservationInfo r
         JOIN T_MemberInfo m ON r.member_code = m.member_code
         WHERE r.state = '예약완료'
-          AND r.start_time &lt;= NOW()
+          AND DATE_FORMAT(r.reservation_date_time, '%Y-%m-%d') = #{currentDate}
+          AND r.start_time &lt;= #{currentTime}
     </select>
 
 </mapper>

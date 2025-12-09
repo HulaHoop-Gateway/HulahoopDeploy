@@ -37,7 +37,15 @@ public class ReservationExpiryScheduler {
         try {
             log.info("🔍 만료된 예약 검색 시작...");
 
-            List<ReservationDTO> expiredReservations = reservationMapper.findExpiredReservations();
+            // ✅ 현재 시간 (KST) 구하기
+            java.time.ZonedDateTime now = java.time.ZonedDateTime.now(java.time.ZoneId.of("Asia/Seoul"));
+            String currentDate = now.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            String currentTime = now.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"));
+
+            log.info("📅 기준 시간: {} {}", currentDate, currentTime);
+
+            List<ReservationDTO> expiredReservations = reservationMapper.findExpiredReservations(currentDate,
+                    currentTime);
 
             if (expiredReservations.isEmpty()) {
                 log.info("✅ 만료된 예약 없음");
