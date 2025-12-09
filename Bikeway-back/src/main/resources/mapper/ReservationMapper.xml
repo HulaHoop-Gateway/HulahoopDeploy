@@ -101,8 +101,7 @@
         FROM T_ReservationInfo r
         JOIN T_MemberInfo m ON r.member_code = m.member_code
         WHERE r.state = '예약완료'
-          AND r.reservation_date_time LIKE CONCAT(#{currentDate}, '%')
-          AND r.start_time &lt;= #{currentTime}
+          AND r.start_time &lt;= #{currentDateTime}
     </select>
 
 </mapper>
