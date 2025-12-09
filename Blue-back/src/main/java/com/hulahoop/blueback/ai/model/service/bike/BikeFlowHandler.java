@@ -169,22 +169,22 @@ public class BikeFlowHandler {
                 // 시작 시간이 현재 시간보다 이전인지 체크
                 if (startDateTime.isBefore(now)) {
                     DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
-                    return "⚠️ 시작 시간이 현재 시간보다 이전입니다.\\n\\n" +
-                            "예약 가능 시간: " + now.format(fmt) + " ~ " + limit.format(fmt) + "\\n" +
+                    return "⚠️ 시작 시간이 현재 시간보다 이전입니다.\n\n" +
+                            "예약 가능 시간: " + now.format(fmt) + " ~ " + limit.format(fmt) + "\n" +
                             "다시 입력해주세요. 예) 18:30 ~ 19:00";
                 }
 
                 // 종료 시간이 제한 시간을 초과하는지 체크
                 if (endDateTime.isAfter(limit)) {
                     DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
-                    return "⚠️ 종료 시간이 예약 가능 시간을 초과합니다.\\n\\n" +
-                            "예약 가능 시간: " + now.format(fmt) + " ~ " + limit.format(fmt) + "\\n" +
+                    return "⚠️ 종료 시간이 예약 가능 시간을 초과합니다.\n\n" +
+                            "예약 가능 시간: " + now.format(fmt) + " ~ " + limit.format(fmt) + "\n" +
                             "다시 입력해주세요. 예) 18:30 ~ 19:00";
                 }
 
                 // 시작 시간이 종료 시간보다 이후인지 체크
                 if (startDateTime.isAfter(endDateTime) || startDateTime.isEqual(endDateTime)) {
-                    return "⚠️ 시작 시간이 종료 시간보다 늦거나 같습니다.\\n\\n" +
+                    return "⚠️ 시작 시간이 종료 시간보다 늦거나 같습니다.\n\n" +
                             "올바른 시간을 입력해주세요. 예) 18:30 ~ 19:00";
                 }
 

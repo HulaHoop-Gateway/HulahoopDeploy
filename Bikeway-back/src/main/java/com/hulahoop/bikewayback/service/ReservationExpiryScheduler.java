@@ -28,9 +28,9 @@ public class ReservationExpiryScheduler {
     }
 
     /**
-     * 매 5분마다 만료된 예약을 찾아 자동으로 상태를 변경합니다.
-     * - 예약 상태: 예약됨 → 완료됨
-     * - 자전거 상태: Reserved → Available
+     * 매 1분마다 시작 시간이 지난 예약을 찾아 자동으로 상태를 변경합니다.
+     * - 예약 상태: 예약완료 → 완료됨 (이용 중/완료)
+     * - 자전거 상태: Reserved → Reserved (시작 시간부터는 계속 예약 상태 유지, 종료 시간에 Available로)
      */
     @Scheduled(fixedRate = 60000) // 1분 (60,000 ms)
     public void processExpiredReservations() {
@@ -44,24 +44,25 @@ public class ReservationExpiryScheduler {
                 return;
             }
 
-            log.info("⏰ 만료된 예약 {}건 발견", expiredReservations.size());
+            log.info("⏰ 시작 시간이 지난 예약 {}건 발견", expiredReservations.size());
 
             int successCount = 0;
             for (ReservationDTO reservation : expiredReservations) {
                 try {
-                    // 예약 상태 업데이트: 예약됨 → 완료됨
+                    // ✅ 예약 상태만 업데이트: 예약완료 → 완료됨 (이용내역으로 이동)
+                    // 자전거는 아직 Reserved 상태 유지 (실제 사용 중)
                     int updated = reservationMapper.updateReservationState(reservation.getRecordNum(), "완료됨");
 
                     if (updated > 0) {
-                        // 자전거 상태 복구: Reserved → Available
-                        bicycleMapper.updateBicycleStatus(reservation.getBicycleCode(), "Available");
+                        // ❌ 자전거 상태는 그대로 유지 (Reserved)
+                        // bicycleMapper.updateBicycleStatus(reservation.getBicycleCode(), "Available");
 
                         // ✅ Admin 서버 상태 업데이트 (P → S)
                         updateAdminTransactionStatus(reservation.getTransactionNum());
 
                         successCount++;
 
-                        log.info("✔️ 예약 #{} 만료 처리 완료 (자전거: {}, 트랜잭션: {})",
+                        log.info("✔️ 예약 #{} 이용 시작 처리 완료 (자전거: {}, 트랜잭션: {})",
                                 reservation.getRecordNum(), reservation.getBicycleCode(),
                                 reservation.getTransactionNum());
                     }
@@ -70,7 +71,7 @@ public class ReservationExpiryScheduler {
                 }
             }
 
-            log.info("🎉 만료 처리 완료: {}/{} 건 성공", successCount, expiredReservations.size());
+            log.info("🎉 이용 시작 처리 완료: {}/{} 건 성공", successCount, expiredReservations.size());
 
         } catch (Exception e) {
             log.error("❌ 만료 예약 처리 중 오류 발생: {}", e.getMessage(), e);

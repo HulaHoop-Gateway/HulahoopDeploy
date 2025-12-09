@@ -100,7 +100,7 @@
         FROM T_ReservationInfo r
         JOIN T_MemberInfo m ON r.member_code = m.member_code
         WHERE r.state = '예약완료'
-          AND r.end_time &lt; NOW()
+          AND r.start_time &lt;= NOW()
     </select>
 
 </mapper>
