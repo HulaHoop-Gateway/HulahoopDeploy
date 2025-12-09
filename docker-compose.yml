@@ -31,7 +31,7 @@ services:
     env_file: .env
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - JAVA_TOOL_OPTIONS=-Xmx256m
+      - JAVA_TOOL_OPTIONS=-Xmx256m -Duser.timezone=Asia/Seoul
     depends_on:
       - blue-back
       - red-back
@@ -61,7 +61,7 @@ services:
     env_file: .env
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - JAVA_TOOL_OPTIONS=-Xmx256m
+      - JAVA_TOOL_OPTIONS=-Xmx256m -Duser.timezone=Asia/Seoul
       # DB 설정 (기본값 사용)
       - DB_URL=${DB_URL}
       - DB_USERNAME=${DB_USERNAME}
@@ -97,7 +97,7 @@ services:
     env_file: .env
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - JAVA_TOOL_OPTIONS=-Xmx256m
+      - JAVA_TOOL_OPTIONS=-Xmx256m -Duser.timezone=Asia/Seoul
       - DB_URL=${DB_URL}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -126,7 +126,7 @@ services:
     env_file: .env
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - JAVA_TOOL_OPTIONS=-Xmx256m
+      - JAVA_TOOL_OPTIONS=-Xmx256m -Duser.timezone=Asia/Seoul
       # URL에서 hulahoopdb를 cinemadb로 교체하여 주입 (중요!)
       - DB_URL=jdbc:mysql://hulahoopdb.c38um8oygmhz.ap-northeast-2.rds.amazonaws.com:3306/cinemadb?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
       - DB_USERNAME=${DB_USERNAME}
@@ -155,7 +155,7 @@ services:
     env_file: .env
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - JAVA_TOOL_OPTIONS=-Xmx256m
+      - JAVA_TOOL_OPTIONS=-Xmx256m -Duser.timezone=Asia/Seoul
       # URL에서 hulahoopdb를 bikewaydb로 교체하여 주입 (중요!)
       - DB_URL=jdbc:mysql://hulahoopdb.c38um8oygmhz.ap-northeast-2.rds.amazonaws.com:3306/bikewaydb?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
       - DB_USERNAME=${DB_USERNAME}

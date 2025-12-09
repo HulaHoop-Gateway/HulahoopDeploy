@@ -8,7 +8,7 @@ function CinemaListFromSeatsOnly() {
   useEffect(() => {
     const fetchSeats = async () => {
       try {
-        const res = await fetch('http://localhost:8082/seat/list');
+        const res = await fetch('/seat/list');
         if (!res.ok) throw new Error('서버 응답 오류');
         const data = await res.json();
         setSeats(data);

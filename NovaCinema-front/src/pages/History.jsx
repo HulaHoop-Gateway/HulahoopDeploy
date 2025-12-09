@@ -18,7 +18,7 @@ function History({ isLoggedIn, setIsLoggedIn }) {
 
     // ✅ 그룹화된 예약 내역 조회
     axios
-      .get(`http://localhost:8082/reservation/history/grouped?phoneNumber=${phoneNumber}`)
+      .get(`/reservation/history/grouped?phoneNumber=${phoneNumber}`)
       .then((res) => setReservations(res.data))
       .catch((err) => console.error('예약 내역 불러오기 실패', err));
   }, [isLoggedIn]);

@@ -10,7 +10,7 @@ const Movies = () => {
 
   useEffect(() => {
     axios
-      .get('http://localhost:8082/info/list')
+      .get('/info/list')
       .then((res) => {
         console.log('🎬 영화 목록 응답:', res.data);
         setMovies(res.data);

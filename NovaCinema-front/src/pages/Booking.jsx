@@ -26,7 +26,7 @@ const Booking = () => {
         status: '예약완료', // 반드시 백엔드가 허용하는 값으로 설정
       };
 
-      const response = await axios.post('http://localhost:8082/reservation/create', payload);
+      const response = await axios.post('/reservation/create', payload);
 
       if (typeof response.data === 'object') {
         alert(response.data.message || JSON.stringify(response.data));
