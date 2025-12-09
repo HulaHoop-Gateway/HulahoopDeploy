@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: "http://43.201.205.26:8081", // Bikeway-back 실제 주소
+    baseURL: "", // Nginx 프록시를 통해 요청 (HTTPS 지원)
     headers: {
         "Content-Type": "application/json",
     },
