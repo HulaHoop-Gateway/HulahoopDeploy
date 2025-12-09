@@ -19,7 +19,12 @@ function History({ isLoggedIn, setIsLoggedIn }) {
     // ✅ 그룹화된 예약 내역 조회
     axios
       .get(`/reservation/history/grouped?phoneNumber=${phoneNumber}`)
-      .then((res) => setReservations(res.data))
+      .then((res) => {
+        console.log('🎬 예약 내역 응답:', res.data);
+        // 응답이 배열이면 그대로, 객체면 빈 배열
+        const data = Array.isArray(res.data) ? res.data : [];
+        setReservations(data);
+      })
       .catch((err) => console.error('예약 내역 불러오기 실패', err));
   }, [isLoggedIn]);
 
