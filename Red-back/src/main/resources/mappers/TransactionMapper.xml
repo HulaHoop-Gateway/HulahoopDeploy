@@ -126,14 +126,10 @@
     </insert>
 
     <!-- 취소 상태 업데이트 -->
-    <update id="updateTransactionStatus"
-            parameterType="com.hulahoop.redback.transaction.model.dto.TransactionDTO">
-
+    <update id="updateTransactionStatus">
         UPDATE T_TransactionHistory
-        SET status = #{status},
-            original_transaction_num = #{originalTransactionNum}
+        SET status = #{status}
         WHERE transaction_num = #{transactionNum}
-
     </update>
 
 </mapper>

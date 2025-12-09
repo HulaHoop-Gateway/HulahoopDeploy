@@ -38,24 +38,21 @@ public class TransactionService {
     // 신규: 페이징 + 정렬 + 날짜 필터 + merchant 필터 대응
     public PageResponseDTO<TransactionDTO> getTransactions(PageRequestDTO requestDTO) {
 
-        List<TransactionDTO> list =
-                transactionMapper.selectTransactionsPaged(requestDTO);
+        List<TransactionDTO> list = transactionMapper.selectTransactionsPaged(requestDTO);
 
-        long total =
-                transactionMapper.countTransactions(requestDTO);
+        long total = transactionMapper.countTransactions(requestDTO);
 
         return new PageResponseDTO<>(
                 list,
                 requestDTO.getPage(),
                 requestDTO.getSize(),
-                total
-        );
+                total);
     }
 
     // ✅ phoneNum을 memberCode로 변환, merchant_name을 merchant_code로 변환, paymentDate 설정
     public int insertTransaction(TransactionDTO dto) {
         // phoneNum이 있고 memberCode가 없으면 phoneNum으로 memberCode 조회
-        if (dto.getPhoneNum() != null && !dto.getPhoneNum().isEmpty() 
+        if (dto.getPhoneNum() != null && !dto.getPhoneNum().isEmpty()
                 && (dto.getMemberCode() == null || dto.getMemberCode().isEmpty())) {
             String memberCode = memberMapper.findMemberCodeByPhone(dto.getPhoneNum());
             if (memberCode != null) {
@@ -85,5 +82,10 @@ public class TransactionService {
         }
 
         return transactionMapper.insertTransaction(dto);
+    }
+
+    // ✅ 트랜잭션 상태 업데이트
+    public void updateTransactionStatus(Long transactionNum, String status) {
+        transactionMapper.updateTransactionStatus(transactionNum, status);
     }
 }

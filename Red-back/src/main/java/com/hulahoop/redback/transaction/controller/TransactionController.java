@@ -29,8 +29,7 @@ public class TransactionController {
     @GetMapping
     public ResponseEntity<PageResponseDTO<TransactionDTO>> getTransactions(PageRequestDTO pageRequestDTO) {
 
-        PageResponseDTO<TransactionDTO> result =
-                transactionService.getTransactions(pageRequestDTO);
+        PageResponseDTO<TransactionDTO> result = transactionService.getTransactions(pageRequestDTO);
 
         return ResponseEntity.ok(result);
     }
@@ -41,6 +40,21 @@ public class TransactionController {
         try {
             transactionService.insertTransaction(dto);
             return ResponseEntity.ok(Map.of("message", "success", "transaction", dto));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("message", "error", "details", e.getMessage()));
+        }
+    }
+
+    // ✅ 상태 업데이트 API (추가)
+    @PostMapping("/update-status")
+    public ResponseEntity<?> updateStatus(@RequestBody Map<String, Object> payload) {
+        try {
+            Long transactionNum = Long.parseLong(String.valueOf(payload.get("transactionNum")));
+            String status = String.valueOf(payload.get("status"));
+
+            transactionService.updateTransactionStatus(transactionNum, status);
+
+            return ResponseEntity.ok(Map.of("message", "success", "transactionNum", transactionNum, "status", status));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("message", "error", "details", e.getMessage()));
         }

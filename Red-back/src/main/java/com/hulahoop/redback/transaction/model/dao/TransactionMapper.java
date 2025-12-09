@@ -20,4 +20,8 @@ public interface TransactionMapper {
 
     // insert 유지
     int insertTransaction(TransactionDTO dto);
+
+    // ✅ 트랜잭션 상태 업데이트
+    int updateTransactionStatus(@org.apache.ibatis.annotations.Param("transactionNum") Long transactionNum,
+            @org.apache.ibatis.annotations.Param("status") String status);
 }
