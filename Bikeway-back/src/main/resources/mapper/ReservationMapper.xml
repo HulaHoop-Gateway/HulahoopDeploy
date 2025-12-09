@@ -84,7 +84,7 @@
         WHERE record_num = #{recordNum}
     </update>
 
-    <select id="findExpiredReservations" resultMap="reservationMap">
+    <select id="findExpiredReservationsV2" resultMap="reservationMap">
         SELECT
             r.record_num,
             r.reservation_date_time,
@@ -101,7 +101,7 @@
         FROM T_ReservationInfo r
         JOIN T_MemberInfo m ON r.member_code = m.member_code
         WHERE r.state = '예약완료'
-          AND DATE_FORMAT(r.reservation_date_time, '%Y-%m-%d') = #{currentDate}
+          AND r.reservation_date_time LIKE CONCAT(#{currentDate}, '%')
           AND r.start_time &lt;= #{currentTime}
     </select>
 

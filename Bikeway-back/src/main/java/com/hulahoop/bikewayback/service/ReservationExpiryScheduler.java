@@ -44,7 +44,7 @@ public class ReservationExpiryScheduler {
 
             log.info("📅 기준 시간: {} {}", currentDate, currentTime);
 
-            List<ReservationDTO> expiredReservations = reservationMapper.findExpiredReservations(currentDate,
+            List<ReservationDTO> expiredReservations = reservationMapper.findExpiredReservationsV2(currentDate,
                     currentTime);
 
             if (expiredReservations.isEmpty()) {
