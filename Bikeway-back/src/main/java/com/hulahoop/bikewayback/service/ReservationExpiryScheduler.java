@@ -79,6 +79,35 @@ public class ReservationExpiryScheduler {
 
             log.info("🎉 이용 시작 처리 완료: {}/{} 건 성공", successCount, expiredReservations.size());
 
+            // ============================================================
+            // 2. 이용 종료(반납) 처리: 완료됨 → 반납완료 (자전거 Available 복구)
+            // ============================================================
+            List<ReservationDTO> finishedReservations = reservationMapper.findFinishedReservations(currentDateTime);
+
+            if (!finishedReservations.isEmpty()) {
+                log.info("⏰ 종료 시간이 지난 예약 {}건 발견 (반납 처리 시작)", finishedReservations.size());
+
+                int returnCount = 0;
+                for (ReservationDTO reservation : finishedReservations) {
+                    try {
+                        // 1. 예약 상태 업데이트: 완료됨 → 반납완료
+                        int updated = reservationMapper.updateReservationState(reservation.getRecordNum(), "반납완료");
+
+                        if (updated > 0) {
+                            // 2. 자전거 상태 복구: Reserved → Available
+                            bicycleMapper.updateBicycleStatus(reservation.getBicycleCode(), "Available");
+                            returnCount++;
+
+                            log.info("✔️ 예약 #{} 반납 처리 완료 (자전거: {} Available 복구)",
+                                    reservation.getRecordNum(), reservation.getBicycleCode());
+                        }
+                    } catch (Exception e) {
+                        log.error("❌ 반납 처리 실패 (예약 #{}): {}", reservation.getRecordNum(), e.getMessage());
+                    }
+                }
+                log.info("🎉 반납 처리 완료: {}/{} 건 성공", returnCount, finishedReservations.size());
+            }
+
         } catch (Exception e) {
             log.error("❌ 만료 예약 처리 중 오류 발생: {}", e.getMessage(), e);
         }

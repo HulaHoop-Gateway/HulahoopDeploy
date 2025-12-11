@@ -16,6 +16,9 @@ public interface ReservationMapper {
 
     int updateReservationState(@Param("recordNum") int recordNum, @Param("state") String state);
 
-    // 만료된 예약 조회 (현재 날짜 + 현재 시간 기준)
-    List<ReservationDTO> findExpiredReservationsV2(@Param("currentDateTime") String currentDateTime);
+    // ✅ 만료된 예약 조회 (시작 시간 지남)
+    List<ReservationDTO> findExpiredReservationsV2(String currentDateTime);
+
+    // ✅ 종료된 예약 조회 (종료 시간 지남)
+    List<ReservationDTO> findFinishedReservations(String currentDateTime);
 }

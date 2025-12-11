@@ -104,4 +104,24 @@
           AND r.start_time &lt;= #{currentDateTime}
     </select>
 
+    <select id="findFinishedReservations" resultMap="reservationMap">
+        SELECT
+            r.record_num,
+            r.reservation_date_time,
+            r.start_time,
+            r.end_time,
+            r.state,
+            r.bicycle_code,
+            r.bicycle_type,
+            r.rate_per_hour,
+            r.duration_hours,
+            r.total_amount,
+            m.phone_number,
+            r.transaction_num
+        FROM T_ReservationInfo r
+        JOIN T_MemberInfo m ON r.member_code = m.member_code
+        WHERE r.state = '완료됨'
+          AND r.end_time &lt;= #{currentDateTime}
+    </select>
+
 </mapper>

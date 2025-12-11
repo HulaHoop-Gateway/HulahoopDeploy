@@ -8,7 +8,8 @@ import java.util.*;
 public class MovieFormatter {
 
     public String formatCinemas(List<Map<String, Object>> cinemas) {
-        if (cinemas == null || cinemas.isEmpty()) return "영화관 정보가 없습니다.";
+        if (cinemas == null || cinemas.isEmpty())
+            return "영화관 정보가 없습니다.";
 
         StringBuilder sb = new StringBuilder("📍 가까운 영화관 목록\n\n");
         int i = 1;
@@ -21,14 +22,14 @@ public class MovieFormatter {
             sb.append(i++).append(") ")
                     .append(cinema.get("branch_name"))
                     .append(" - ").append(dist).append(" km\n")
-                    .append("   📍 주소: ").append(cinema.get("address"))
-                    .append(" (지점코드: ").append(cinema.get("branch_num")).append(")\n\n");
+                    .append("   📍 주소: ").append(cinema.get("address")).append("\n\n");
         }
         return sb.toString();
     }
 
     public String formatSchedules(List<Map<String, Object>> schedules) {
-        if (schedules == null || schedules.isEmpty()) return "상영 스케줄이 없습니다.";
+        if (schedules == null || schedules.isEmpty())
+            return "상영 스케줄이 없습니다.";
 
         StringBuilder sb = new StringBuilder("[상영 스케줄 목록]\n\n");
         int i = 1;
@@ -43,7 +44,8 @@ public class MovieFormatter {
     }
 
     public String formatSeats(List<Map<String, Object>> seats) {
-        if (seats == null || seats.isEmpty()) return "좌석 정보가 없습니다.";
+        if (seats == null || seats.isEmpty())
+            return "좌석 정보가 없습니다.";
 
         StringBuilder sb = new StringBuilder();
         Map<String, List<Map<String, Object>>> rows = new TreeMap<>();
@@ -59,9 +61,8 @@ public class MovieFormatter {
             }
         }
 
-        rows.values().forEach(rowSeats ->
-                rowSeats.sort(Comparator.comparingInt(s -> Integer.parseInt(String.valueOf(s.get("col_num")))))
-        );
+        rows.values().forEach(rowSeats -> rowSeats
+                .sort(Comparator.comparingInt(s -> Integer.parseInt(String.valueOf(s.get("col_num"))))));
 
         for (String row : rows.keySet()) {
             sb.append(row).append(" | ");
